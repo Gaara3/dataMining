@@ -11,8 +11,7 @@ private:
 	MYSQL_RES *res;
 	MYSQL_ROW rowElement;
 public:
-	bool connectDatabase(const char* database);
-	bool operateDatabase(const char* operation);
+
 	DataMiner();
 	~DataMiner();
 	//void dataPreprocess();

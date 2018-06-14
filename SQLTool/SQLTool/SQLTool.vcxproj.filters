@@ -21,21 +21,21 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="HistoryTrack.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="HistoryTrackDetail.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="DataMiner.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SqlTool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryTrack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SQLTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="dataFromDB.cpp">
@@ -45,6 +45,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DataMiner.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SQLToolDemo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SqlTool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryTrack.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

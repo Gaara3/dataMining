@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 
 using std::string;
@@ -9,7 +9,7 @@ class HistoryTrackDetail
 		string TRACKID;
 		int ORDERNUMBER;
 		string TARGETID;
-		string TIME;
+		int TIME;
 		string SOURCE;
 		double UPPERLEFTLONGITUDE;
 		double UPPERLEFTLATITUDE;
@@ -17,7 +17,7 @@ class HistoryTrackDetail
 		double UPPERRIGHTLONGITUDE;
 		double UPPERRIGHTLATITUDE;
 		double UPPERRIGHTALTITUDE;
-		double LOWERERLEFTLONGITUDE;
+		double LOWERLEFTLONGITUDE;
 		double LOWERLEFTLATITUDE;
 		double LOWERLEFTALTITUDE;
 		double LOWERRIGHTLONGITUDE;
@@ -31,13 +31,20 @@ class HistoryTrackDetail
 		string RESERVE1;
 		string RESERVE2;
 
+		static int intervalThreshold;
 	public:
 		string insertSQL();
 		HistoryTrackDetail();
-		HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, string TIME, string SOURCE,
+		HistoryTrackDetail(char* TARGET, char* POSIXTIME, char* SOURCE, char* LONGITUDE, char* LATITUDE, char* ALTITUDE, char* OPERATOR, char* RESERVE1, char* RESERVE2);
+		
+		//jUST FOR TEST
+		HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, int TIME, string SOURCE,
 			double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,/*double LOWERRIGHTLONGITUDE, double LOWERRIGHTLATITUDE,
 			double LOWERRIGHTALTITUDE, double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,*/double CONFIDENCELEVEL,
 			string OPERATOR, string RESERVE1, string RESERVE2);
+
+		void setOderNumber(int);
+		bool headOfTrack(int lastPosixTime);
 		~HistoryTrackDetail();
 
 };

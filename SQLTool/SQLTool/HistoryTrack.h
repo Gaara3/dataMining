@@ -1,22 +1,13 @@
-#pragma once
-#include "stdafx.h"
-#include <stdio.h>	
-#include <Windows.h>
-#include <winsock.h>
+Ôªø#pragma once
 #include <string>
-#include "mysql.h"
 #include <vector>
 #include "HistoryTrackDetail.h"
 
 using std::string;
 using std::vector;
 
-MYSQL mysql;
-MYSQL_RES *res;
-MYSQL_ROW column;
-char query[150];
-
-class HistoryTrack {
+class HistoryTrack
+{
 private:
 	string TRACKID;
 	int POINTAMOUNT;
@@ -25,48 +16,22 @@ private:
 	string TARGETNAME;
 	string TARGETTYPE;
 	string GB;
-	string STARTTIME;
-	string ENDTIME;
+	int STARTTIME;
+	int ENDTIME;
 	double CONFIDENCELEVEL;
 	string SOURCE;
 	string TASKINFO;
 	string OPERATOR;
 	string RESERVE1;
 	string RESERVE2;
+	vector<HistoryTrackDetail> historyTrackDetail;
 
-
+	
 public:
-	//≤Â»Î¿˙ ∑πÏº£
-	void insertIntoDB() {
-		if (!connectDatabase()) {	//¡¨Ω” ß∞‹
-			return;
-		}
-		string insertQuery = "insert into historytrack_main(ID,TRACKID,POINTAMOUNT,TARGETID,TARGETMODELNUMBER,) values "
-		sprintf(query, "insert into historytrack_main(TODO) values (NULL, 'Lilei', 'wyt2588zs','lilei23@sina.cn');");  //ø…“‘œÎ∞Ï∑® µœ÷ ÷∂Ø‘⁄øÿ÷∆Ã® ÷∂Ø ‰»Î÷∏¡Ó  
-		if (mysql_query(&mysql, query))        //÷¥––SQL”Ôæ‰  
-		{
-			printf("Query failed (%s)\n", mysql_error(&mysql));
-			return ;
-		}
-		else
-		{
-			printf("Insert success\n");
-			return ;
-		}
-		
-	}
-
-	//¡¨Ω” ˝æ›ø‚
-	bool connectDatabase() {
-		mysql_init(&mysql);//≥ı ºªØmysql,¡¨Ω”mysql
-
-		if (!(mysql_real_connect(&mysql, "localhost", "root", "root", "bigdata", 3306, NULL, 0))) {
-			printf("Error connecting to datebase:%s\n", mysql_error(&mysql));
-			return false;
-		}
-		else {
-			printf("Connected...\n");
-			return true;
-		}
-	}
+	HistoryTrack();
+	HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME);
+	~HistoryTrack();
+	static string getTargetsQuery;
+	static string getTargetRecords(string targetID);
 };
+

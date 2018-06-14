@@ -161,13 +161,16 @@
     <ClInclude Include="DataMiner.h" />
     <ClInclude Include="HistoryTrack.h" />
     <ClInclude Include="HistoryTrackDetail.h" />
+    <ClInclude Include="SqlTool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataMiner.cpp" />
+    <ClCompile Include="HistoryTrack.cpp" />
     <ClCompile Include="HistoryTrackDetail.cpp" />
-    <ClCompile Include="SQLTool.cpp" />
+    <ClCompile Include="SqlTool.cpp" />
+    <ClCompile Include="SQLToolDemo.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
