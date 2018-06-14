@@ -44,6 +44,7 @@ class HistoryTrackDetail
 			string OPERATOR, string RESERVE1, string RESERVE2);
 
 		void setOderNumber(int);
+		void setTrackID(string trackID);
 		bool headOfTrack(int lastPosixTime);
 		~HistoryTrackDetail();
 

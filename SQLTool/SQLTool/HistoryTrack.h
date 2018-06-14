@@ -24,14 +24,23 @@ private:
 	string OPERATOR;
 	string RESERVE1;
 	string RESERVE2;
-	vector<HistoryTrackDetail> historyTrackDetail;
+	
 
 	
 public:
+	vector<HistoryTrackDetail> historyTrackDetail;
+
 	HistoryTrack();
 	HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME);
+
 	~HistoryTrack();
 	static string getTargetsQuery;
 	static string getTargetRecords(string targetID);
+
+
+	void setPointAmount(int pointAmount);
+	void setEndTime(int endTime);
+	string trackIDgenerator(int length);
+	string insertSQL();
 };
 

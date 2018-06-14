@@ -87,6 +87,10 @@ void  HistoryTrackDetail::setOderNumber(int orderNumber) {
 	this->ORDERNUMBER = orderNumber;
 }
 
+void HistoryTrackDetail::setTrackID(string trackID) {
+	this->TRACKID = trackID;
+}
+
 bool HistoryTrackDetail::headOfTrack(int lastPosixTime) {
 	return this->TIME - lastPosixTime > intervalThreshold;
 }
