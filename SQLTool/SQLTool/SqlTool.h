@@ -6,7 +6,7 @@
 #include <string>
 #include "mysql.h"
 
-using std::string;
+//using std::string;
 
 class SqlTool
 {
@@ -18,8 +18,8 @@ private:
 public:	
 	bool connectDB();
 	bool operationExcutor(const char* operation,MYSQL_RES* &res);
-	string uuidGenerator(MYSQL_RES* &res);
-	static string datetimeConvertor(int input);
+	char* uuidGenerator(MYSQL_RES* &res);
+	static char* datetimeConvertor(int input);
 	SqlTool();
 	~SqlTool();
 };

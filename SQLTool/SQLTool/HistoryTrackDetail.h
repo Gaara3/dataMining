@@ -1,16 +1,17 @@
 ﻿#pragma once
 #include <string>
+#include <time.h>
 
 using std::string;
 
 class HistoryTrackDetail
 {
 	private:
-		string TRACKID;
+		char* TRACKID;
 		int ORDERNUMBER;
-		string TARGETID;
+		char* TARGETID;
 		int TIME;
-		string SOURCE;
+		char* SOURCE;
 		double UPPERLEFTLONGITUDE;
 		double UPPERLEFTLATITUDE;
 		double UPPERLEFTALTITUDE;
@@ -27,25 +28,26 @@ class HistoryTrackDetail
 		double CENTERLATITUDE;
 		double CENTERALTITUDE;
 		double CONFIDENCELEVEL;
-		string OPERATOR;
-		string RESERVE1;
-		string RESERVE2;
+		char* OPERATOR;
+		char* RESERVE1;
+		char* RESERVE2;
 
 		static int intervalThreshold;
 	public:
-		string insertSQL();
+		char* insertSQL();
 		HistoryTrackDetail();
-		HistoryTrackDetail(const char* TARGET, const char* POSIXTIME, const char* SOURCE, const char* LONGITUDE, const char* LATITUDE, const char* ALTITUDE, const char* OPERATOR, const char* RESERVE1, const char* RESERVE2);
+		HistoryTrackDetail(char* TARGET,char* POSIXTIME,char* SOURCE,char* LONGITUDE,char* LATITUDE,char* ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2);
 		
 		//jUST FOR TEST
-		HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, int TIME, string SOURCE,
-			double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,/*double LOWERRIGHTLONGITUDE, double LOWERRIGHTLATITUDE,
-			double LOWERRIGHTALTITUDE, double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,*/double CONFIDENCELEVEL,
-			string OPERATOR, string RESERVE1, string RESERVE2);
+		//HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, int TIME, string SOURCE,
+		//	double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,/*double LOWERRIGHTLONGITUDE, double LOWERRIGHTLATITUDE,
+		//	double LOWERRIGHTALTITUDE, double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,*/double CONFIDENCELEVEL,
+		//	string OPERATOR, string RESERVE1, string RESERVE2);
 
 		void setOderNumber(int);
-		void setTrackID(string trackID);
+		void setTrackID(char* trackID);
 		bool headOfTrack(int lastPosixTime);
+		static char* datetimeConvertor(int input);
 		~HistoryTrackDetail();
 
 };

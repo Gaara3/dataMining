@@ -3,8 +3,8 @@
 #include <string>
 #include <time.h>
 
-using std::string;
-using std::to_string;
+//using std::string;
+//using std::to_string;
 
 SqlTool::SqlTool()
 {
@@ -37,19 +37,19 @@ bool SqlTool::operationExcutor(const char* operation, MYSQL_RES* &res) {
 	return true;
 }
 
-string SqlTool::uuidGenerator(MYSQL_RES* &res)
+char* SqlTool::uuidGenerator(MYSQL_RES* &res)
 {
 	this->operationExcutor("select UUID()", res);
 	MYSQL_ROW column = mysql_fetch_row(res);
-	return string(column[0]);
+	return column[0];
 }
 
-string SqlTool::datetimeConvertor(int input) {
+char* SqlTool::datetimeConvertor(int input) {
 	time_t t = input;
 	tm *ltm = localtime(&t);	
 	char* res =new char[19];
 	sprintf(res, "%4d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-	return string(res);
+	return res;
 	/*return to_string(ltm->tm_year + 1900).append("-").append(to_string(ltm->tm_mon + 1)).append("-").append(to_string(ltm->tm_mday + 1)).append(" ").append(to_string(ltm->tm_hour))
 		.append(":").append(to_string(ltm->tm_min)).append(":").append(to_string(ltm->tm_sec));*/
 

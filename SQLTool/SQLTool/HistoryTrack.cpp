@@ -8,10 +8,13 @@ using std::to_string;
 
 
 
-string HistoryTrack::getTargetsQuery = "SELECT distinct TARGETID FROM PREPROCESSING_copy;";
+const char* HistoryTrack::getTargetsQuery = "SELECT distinct TARGETID FROM PREPROCESSING_copy;";
 
-string HistoryTrack::getTargetRecords(string targetID) {
-	return string("SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '").append(targetID).append("'ORDER BY POSIXTIME; ");
+char* HistoryTrack::getTargetRecords(char* targetID) {
+	char* res = new char[700];
+	sprintf(res, "SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '%s' ORDER BY POSIXTIME; ", targetID);
+	return res;
+	//return string("SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '").append(targetID).append("'ORDER BY POSIXTIME; ");
 	}
 
 HistoryTrack::HistoryTrack()
@@ -28,10 +31,6 @@ HistoryTrack::HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* O
 	this->CONFIDENCELEVEL = 1;
 }
 
-//TODO improvement is need
-string HistoryTrack::trackIDgenerator(int length) {
-	return string("testtestteeesttest");
-}
 
 void HistoryTrack::setEndTime(int endTime) {
 	this->ENDTIME = endTime;
@@ -41,23 +40,34 @@ void HistoryTrack::setPointAmount(int pointAmount) {
 	this->POINTAMOUNT = pointAmount;
 }
 
-void HistoryTrack::setTrackID(string trackID) {
+void HistoryTrack::setTrackID(char* trackID) {
 	this->TRACKID = trackID;
 }
 
-string HistoryTrack::insertSQL() {
+char* HistoryTrack::insertSQL() {
 	
-	string insertSql = "insert into HISTORYTRACK_MAIN_COPY1 (ID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,SOURCE,TASKINFO,CONFIDENCELEVEL,OPERATOR,RESERVE1,RESERVE2) values(";
-	insertSql.append("UUID(),'").append(this->TRACKID).append("',").append(to_string(POINTAMOUNT)).append(",'").append(this->TARGETID).append("','")
+	//string insertSql = "insert into HISTORYTRACK_MAIN_COPY1 (ID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,SOURCE,TASKINFO,CONFIDENCELEVEL,OPERATOR,RESERVE1,RESERVE2) values(";
+	/*insertSql.append("UUID(),'").append(this->TRACKID).append("',").append(to_string(POINTAMOUNT)).append(",'").append(this->TARGETID).append("','")
 		.append(SqlTool::datetimeConvertor(this->STARTTIME)).append("','").append(SqlTool::datetimeConvertor(this->ENDTIME)).append("','").append(this->SOURCE).append("','").append(this->TASKINFO)
 		.append("',").append(to_string(this->CONFIDENCELEVEL)).append(",'").append(this->OPERATOR).append("','").append(this->RESERVE1).append("','")
-		.append(this->RESERVE2).append("');");
+		.append(this->RESERVE2).append("');");*/
 
-	return insertSql;
+
+	/*char* res = new char[800];
+	sprintf(res, "insert into HISTORYTRACK_MAIN_COPY1(ID, TRACKID, POINTAMOUNT, TARGETID, STARTTIME, ENDTIME, SOURCE, TASKINFO, CONFIDENCELEVEL, OPERATOR, RESERVE1, RESERVE2) values(UUID(),\
+		'%s',%d,'%s','%s','%s','%s','%s',%lf,'%s','%s','%s');",TRACKID,POINTAMOUNT,TARGETID,datetimeConvertor(STARTTIME),datetimeConvertor(ENDTIME),SOURCE,TASKINFO,
+		CONFIDENCELEVEL,OPERATOR,RESERVE1,RESERVE2);*/
+
+	const char* res = "insert into HISTORYTRACK_MAIN_copy1(ID, TRACKID, POINTAMOUNT, TARGETID, STARTTIME, ENDTIME, SOURCE, TASKINFO, CONFIDENCELEVEL, OPERATOR, RESERVE1, RESERVE2) values(UUID(), '', 1, 'targetId', '2018-05-30 14:14:14', '2018-5-3', 'source', 'taskInfo', 0.000000, 'Gaara', '', '');";
+	return const_cast<char*>(res);
 }
 
-string HistoryTrack::datetimeConvertor(int input) {
-	return "";
+char* HistoryTrack::datetimeConvertor(int input) {
+	time_t t = input;
+	tm *ltm = localtime(&t);
+	char* res = new char[19];
+	sprintf(res, "%4d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+	return res;
 }
 
 HistoryTrack::~HistoryTrack()

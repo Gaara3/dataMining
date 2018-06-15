@@ -1,32 +1,30 @@
 ﻿#pragma once
-#include <string>
+
 #include <vector>
 #include "HistoryTrackDetail.h"
 
-
-using std::string;
 using std::vector;
 
 class HistoryTrack
 {
 private:
-	string TRACKID;
+	char* TRACKID;
 	int POINTAMOUNT;
-	string TARGETID;
-	string TARGETMODELNUMBER;
-	string TARGETNAME;
-	string TARGETTYPE;
-	string GB;
+	char* TARGETID;
+	char* TARGETMODELNUMBER;
+	char* TARGETNAME;
+	char* TARGETTYPE;
+	char* GB;
 	int STARTTIME;
 	int ENDTIME;
 	double CONFIDENCELEVEL;
-	string SOURCE;
-	string TASKINFO;
-	string OPERATOR;
-	string RESERVE1;
-	string RESERVE2;
+	char* SOURCE;
+	char* TASKINFO;
+	char* OPERATOR;
+	char* RESERVE1;
+	char* RESERVE2;
 	
-	static string datetimeConvertor(int input);
+	static char* datetimeConvertor(int input);
 	
 public:
 	vector<HistoryTrackDetail> historyTrackDetail;
@@ -35,14 +33,12 @@ public:
 	HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME);
 
 	~HistoryTrack();
-	static string getTargetsQuery;
-	static string getTargetRecords(string targetID);
-
+	const static char* getTargetsQuery;
+	static char* getTargetRecords(char* targetID);
 
 	void setPointAmount(int pointAmount);
 	void setEndTime(int endTime);
-	void setTrackID(string trackID);
-	string trackIDgenerator(int length);
-	string insertSQL();
+	void setTrackID(char* trackID);
+	char* insertSQL();
 };
 

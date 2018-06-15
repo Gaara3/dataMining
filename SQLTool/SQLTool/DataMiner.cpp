@@ -15,13 +15,13 @@ MYSQL_ROW column;
 
 
 int main() {
-	vector<string> targets;
+	vector<char*> targets;
 	vector<vector<HistoryTrack>> HistoryTracksOfAllTargets;    //轨迹集合的集合，即所有tar的轨迹集合
 
 	if (!sqlTool.connectDB()) {
 		return 0;//连接数据库异常
 	}
-	if (!sqlTool.operationExcutor(HistoryTrack::getTargetsQuery.c_str(), res))
+	if (!sqlTool.operationExcutor(HistoryTrack::getTargetsQuery, res))
 		return 0;//执行数据库操作异常,程序结束
 	int targetNum = mysql_num_fields(res);  // 获取列数 
 	while (column = mysql_fetch_row(res))//对每个目标进行操作
@@ -34,28 +34,29 @@ int main() {
 	
 	int targetsNum = targets.size();
 	for (int counter = 0; counter < targetsNum; counter++) {	//对每个对象进行轨迹提取为了性能考虑暂时不用迭代器
-
+		printf("=================new target================\n");
 		//分段开始
 		int orderCounter = 0;
 		int lastPosixTime = 0;
-		string currentTrackID;
+		char* currentTrackID =new char;
 		vector<HistoryTrack> historyTracksOfOneTarget;
 		
-		if (sqlTool.operationExcutor(HistoryTrack::getTargetRecords(targets[counter]).c_str(),res)) {//单个target的所有记录
+		if (sqlTool.operationExcutor(HistoryTrack::getTargetRecords(targets[counter]),res)) {//单个target的所有记录
 			MYSQL_RES *targetRecords = res;
 			while (column = mysql_fetch_row(targetRecords)) {
 				//无论是否为起点，先生成点记录
 				HistoryTrackDetail tmp = HistoryTrackDetail(column[0], column[1], column[2], column[3], column[4], column[5], column[6], column[7], column[8]);
 				if (!tmp.headOfTrack(lastPosixTime)) {	//当前点迹不是起点
 					tmp.setOderNumber(++orderCounter);				
-					sqlTool.operationExcutor(tmp.insertSQL().c_str(), res); //插入历史轨迹sub表	
+					sqlTool.operationExcutor(tmp.insertSQL(), res); //插入历史轨迹sub表	
 				}
 				else {		//当前点轨迹是起点
+					printf("----------------new track-----------\n");
 					if (!historyTracksOfOneTarget.empty()) {//此目标此前已有轨迹，需对上一条轨迹进行最后的处理并入库（需更新上一轨迹的endTime,orderNumber）
 						historyTracksOfOneTarget.back().setPointAmount(orderCounter);
 						historyTracksOfOneTarget.back().setEndTime(lastPosixTime);
 						//存入数据库
-						sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL().c_str(),res);
+						sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL(),res);
 						orderCounter = 0;	
 					}
 
@@ -69,12 +70,13 @@ int main() {
 				tmp.setTrackID(currentTrackID);
 				historyTracksOfOneTarget.back().historyTrackDetail.push_back(tmp);//当前轨迹存入该点
 				lastPosixTime = atoi(column[1]);//无论是否开启新段，都需要更新lastPosixTime
+				printf("         new point     %d   \n",orderCounter);
 			}
 			//对本tar的最后一个track进行封装、入库
 			historyTracksOfOneTarget.back().setEndTime(lastPosixTime);
 			historyTracksOfOneTarget.back().setPointAmount(orderCounter);
-			sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL().c_str(), res);	
-			sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL().c_str(), res);//这里四行可封装
+			sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL(), res);	
+			sqlTool.operationExcutor(historyTracksOfOneTarget.back().insertSQL(), res);//这里四行可封装
 
 			printf("result rows:%d", targetRecords->row_count);
 			//mysql_free_result(res);
