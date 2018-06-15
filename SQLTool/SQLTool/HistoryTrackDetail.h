@@ -35,7 +35,7 @@ class HistoryTrackDetail
 	public:
 		string insertSQL();
 		HistoryTrackDetail();
-		HistoryTrackDetail(char* TARGET, char* POSIXTIME, char* SOURCE, char* LONGITUDE, char* LATITUDE, char* ALTITUDE, char* OPERATOR, char* RESERVE1, char* RESERVE2);
+		HistoryTrackDetail(const char* TARGET, const char* POSIXTIME, const char* SOURCE, const char* LONGITUDE, const char* LATITUDE, const char* ALTITUDE, const char* OPERATOR, const char* RESERVE1, const char* RESERVE2);
 		
 		//jUST FOR TEST
 		HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, int TIME, string SOURCE,

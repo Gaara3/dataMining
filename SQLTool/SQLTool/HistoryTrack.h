@@ -3,6 +3,7 @@
 #include <vector>
 #include "HistoryTrackDetail.h"
 
+
 using std::string;
 using std::vector;
 
@@ -25,7 +26,7 @@ private:
 	string RESERVE1;
 	string RESERVE2;
 	
-
+	static string datetimeConvertor(int input);
 	
 public:
 	vector<HistoryTrackDetail> historyTrackDetail;
@@ -40,6 +41,7 @@ public:
 
 	void setPointAmount(int pointAmount);
 	void setEndTime(int endTime);
+	void setTrackID(string trackID);
 	string trackIDgenerator(int length);
 	string insertSQL();
 };

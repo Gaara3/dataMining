@@ -1,9 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "stdafx.h"
 #include <stdio.h>
-#include <WinSock.h>  //Ò»¶¨Òª°üº¬Õâ¸ö£¬»òÕßwinsock2.h
+#include <WinSock.h>  //ä¸€å®šè¦åŒ…å«è¿™ä¸ªï¼Œæˆ–è€…winsock2.h
 #include <Windows.h>
+#include <string>
 #include "mysql.h"
+
+using std::string;
+
 class SqlTool
 {
 private:
@@ -11,9 +15,11 @@ private:
 	MYSQL_RES *res;
 	//MYSQL_ROW column;
 
-public:
+public:	
 	bool connectDB();
 	bool operationExcutor(const char* operation,MYSQL_RES* &res);
+	string uuidGenerator(MYSQL_RES* &res);
+	static string datetimeConvertor(int input);
 	SqlTool();
 	~SqlTool();
 };
