@@ -13,6 +13,8 @@ SqlTool::SqlTool()
 
 SqlTool::~SqlTool()
 {
+	mysql_free_result(res);
+	mysql_close(&mysql);
 }
 
 bool SqlTool::connectDB() {

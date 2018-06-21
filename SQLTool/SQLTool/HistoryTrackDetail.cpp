@@ -87,7 +87,7 @@ CENTERALTITUDE,CONFIDENCELEVEL,OPERATOR,RESERVE1,RESERVE2) values(";
 		.append(to_string(this->CENTERLONGITUDE)).append(",").append(to_string(this->CENTERLATITUDE)).append(",").append(to_string(this->CENTERALTITUDE)).append(",")
 		.append("1,'").append(this->OPERATOR).append("','").append(this->RESERVE1).append("','").append(this->RESERVE2).append("');");
 */
-	char* res = new char[1000];
+	char* res = new char[2000];
 	/*sprintf(res, "insert into HISTORYTRACK_SUB_COPY1(ID,TRACKID,ORDERNUMBER,TARGETID,TIME,SOURCE,UPPERLEFTLONGITUDE,\
 UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,CENTERLONGITUDE,CENTERLATITUDE,\
 CENTERALTITUDE,CONFIDENCELEVEL,OPERATOR,RESERVE1,RESERVE2) values(UUID(),'%s',%d,'%s','%s','%s',%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,'%s','%s','%s');",TRACKID, ORDERNUMBER,TARGETID,datetimeConvertor(TIME),SOURCE,
@@ -102,9 +102,27 @@ void  HistoryTrackDetail::setOderNumber(int orderNumber) {
 	this->ORDERNUMBER = orderNumber;
 }
 
-void HistoryTrackDetail::setTrackID(char* trackID) {
+void HistoryTrackDetail::setTrackID(int trackID) {
 	this->TRACKID = trackID;
 }
+
+int HistoryTrackDetail::getTime() {
+	return this->TIME;
+}
+
+char* HistoryTrackDetail::getTargetID() {
+	return this->TARGETID;
+}
+
+char* HistoryTrackDetail::getSource() {
+	return this->SOURCE;
+}
+
+char* HistoryTrackDetail::getOperator() {
+	return this->OPERATOR;
+}
+
+
 
 //与上一点时间间隔大，视为起点
 bool HistoryTrackDetail::headOfTrack(int lastPosixTime) {

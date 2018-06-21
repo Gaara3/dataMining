@@ -8,7 +8,7 @@ using std::vector;
 class HistoryTrack
 {
 private:
-	char* TRACKID;
+	int TRACKID;
 	int POINTAMOUNT;
 	char* TARGETID;
 	char* TARGETMODELNUMBER;
@@ -30,7 +30,8 @@ public:
 	vector<HistoryTrackDetail> historyTrackDetail;
 
 	HistoryTrack();
-	HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME);
+	HistoryTrack(int trackID, char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,int STARTTIME);
+	HistoryTrack(int trackID, char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME);
 
 	~HistoryTrack();
 	const static char* getTargetsQuery;
@@ -38,7 +39,8 @@ public:
 
 	void setPointAmount(int pointAmount);
 	void setEndTime(int endTime);
-	void setTrackID(char* trackID);
+	void setTrackID(int trackID);
 	char* insertSQL();
+	void trackEndProcession(int endTime,int pointAmount,vector<HistoryTrackDetail>details);
 };
 

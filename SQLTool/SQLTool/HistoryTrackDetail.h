@@ -7,7 +7,7 @@ using std::string;
 class HistoryTrackDetail
 {
 	private:
-		char* TRACKID;
+		int TRACKID;
 		int ORDERNUMBER;
 		char* TARGETID;
 		int TIME;
@@ -45,10 +45,13 @@ class HistoryTrackDetail
 		//	string OPERATOR, string RESERVE1, string RESERVE2);
 
 		void setOderNumber(int);
-		void setTrackID(char* trackID);
+		void setTrackID(int trackID);
 		bool headOfTrack(int lastPosixTime);
 		static char* datetimeConvertor(int input);
 		~HistoryTrackDetail();
-
+		int getTime();
+		char* getTargetID();
+		char* getSource();
+		char* getOperator();
 };
 

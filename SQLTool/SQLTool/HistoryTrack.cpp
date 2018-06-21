@@ -11,7 +11,7 @@ using std::to_string;
 const char* HistoryTrack::getTargetsQuery = "SELECT distinct TARGETID FROM PREPROCESSING_copy;";
 
 char* HistoryTrack::getTargetRecords(char* targetID) {
-	char* res = new char[700];
+	char* res = new char[800];
 	sprintf(res, "SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '%s' ORDER BY POSIXTIME; ", targetID);
 	return res;
 	//return string("SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '").append(targetID).append("'ORDER BY POSIXTIME; ");
@@ -21,7 +21,20 @@ HistoryTrack::HistoryTrack()
 {
 }
 
-HistoryTrack::HistoryTrack(char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,char* STARTTIME) {
+HistoryTrack::HistoryTrack(int trackID,char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,int STARTTIME) {
+	this->TRACKID = trackID;
+	this->TARGETID = TARGETID;
+	this->SOURCE = SOURCE;
+	this->TASKINFO = TASKINFO;
+	this->OPERATOR = OPERATOR;
+	this->POINTAMOUNT = 1;
+	this->STARTTIME = STARTTIME;
+	this->CONFIDENCELEVEL = 1;
+}
+
+HistoryTrack::HistoryTrack(int trackID, char * TARGETID, char * SOURCE, char * TASKINFO, char * OPERATOR, char * STARTTIME)
+{
+	this->TRACKID = trackID;
 	this->TARGETID = TARGETID;
 	this->SOURCE = SOURCE;
 	this->TASKINFO = TASKINFO;
@@ -40,7 +53,7 @@ void HistoryTrack::setPointAmount(int pointAmount) {
 	this->POINTAMOUNT = pointAmount;
 }
 
-void HistoryTrack::setTrackID(char* trackID) {
+void HistoryTrack::setTrackID(int trackID) {
 	this->TRACKID = trackID;
 }
 
@@ -68,6 +81,12 @@ char* HistoryTrack::datetimeConvertor(int input) {
 	char* res = new char[19];
 	sprintf(res, "%4d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 	return res;
+}
+
+void HistoryTrack::trackEndProcession(int endTime, int pointAmount, vector<HistoryTrackDetail>details) {
+	this->setEndTime(endTime);
+	this->setPointAmount(pointAmount);
+	this->historyTrackDetail.assign(details.begin(), details.end());
 }
 
 HistoryTrack::~HistoryTrack()
