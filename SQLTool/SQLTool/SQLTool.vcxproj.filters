@@ -21,16 +21,10 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="HistoryTrackDetail.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="DataMiner.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SqlTool.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="HistoryTrack.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="PreProcessor.h">
@@ -39,15 +33,18 @@
     <ClInclude Include="Main.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TrackPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="dataFromDB.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="HistoryTrackDetail.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DataMiner.cpp">
@@ -59,13 +56,16 @@
     <ClCompile Include="SqlTool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="HistoryTrack.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="PreProcessor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Track.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TrackPoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

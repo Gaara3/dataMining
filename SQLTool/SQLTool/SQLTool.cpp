@@ -19,7 +19,7 @@ SqlTool::~SqlTool()
 
 bool SqlTool::connectDB() {
 	mysql_init(&this->mysql);
-	if (!mysql_real_connect(&mysql, "localhost", "root", "root", "bigdata", 3306, NULL, 0)) {
+	if (!mysql_real_connect(&mysql, "localhost", "root", "root", "new_bigdata", 3306, NULL, 0)) {
 		printf("Something wrong when connecting to the Database:%s\n", mysql_error(&mysql));
 		return false;
 	}
@@ -39,6 +39,15 @@ bool SqlTool::operationExcutor(const char* operation, MYSQL_RES* &res) {
 	return true;
 }
 
+bool SqlTool::insertExcutor(const char* operation) {
+	if (mysql_query(&this->mysql, operation))        //执行SQL语句  
+	{
+		printf("operation failed (%s)\n", mysql_error(&mysql));
+		printf("SQL:%s\n", operation);
+		return false;
+	}
+	return true;
+}
 char* SqlTool::uuidGenerator(MYSQL_RES* &res)
 {
 	this->operationExcutor("select UUID()", res);

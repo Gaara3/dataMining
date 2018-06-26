@@ -11,13 +11,15 @@
 class SqlTool
 {
 private:
-	MYSQL mysql;
-	MYSQL_RES *res;
+	
 	//MYSQL_ROW column;
 
 public:	
+	MYSQL mysql;
+	MYSQL_RES *res;
 	bool connectDB();
 	bool operationExcutor(const char* operation,MYSQL_RES* &res);
+	bool insertExcutor(const char* operation);
 	char* uuidGenerator(MYSQL_RES* &res);
 	static char* datetimeConvertor(int input);
 	SqlTool();
