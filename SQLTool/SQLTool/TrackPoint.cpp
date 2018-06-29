@@ -43,6 +43,16 @@ TrackPoint::TrackPoint(char* TARGETID,char* POSIXTIME,char* SOURCE,double LONGIT
 	this->RESERVE2 = RESERVE2;
 }
 
+void TrackPoint::setGridX(int X)
+{
+	this->gridX = X;
+}
+
+void TrackPoint::setGridY(int Y)
+{
+	this->gridY = Y;
+}
+
 //HistoryTrackPoint::HistoryTrackPoint(string TRACKID,int ORDERNUMBER,string TARGETID,int TIME,string SOURCE,
 //	double CENTERLONGITUDE,double CENTERLATITUDE,double CENTERALTITUDE,/*double LOWERRIGHTLONGITUDE,double LOWERRIGHTLATITUDE ,
 //	double LOWERRIGHTALTITUDE,double CENTERLONGITUDE,double CENTERLATITUDE,double CENTERALTITUDE,*/double CONFIDENCELEVEL,
@@ -153,4 +163,18 @@ char* TrackPoint::datetimeConvertor(int input) {
 	char* res = new char[19];
 	sprintf(res, "%4d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 	return res;
+}
+
+
+int TrackPoint::getGridX(double* edges,double prec) {
+	return floor((this->CENTERLONGITUDE- edges[1]) / prec);
+}
+
+int TrackPoint::getGridY(double* edges, double prec) {
+	return floor((this->CENTERLATITUDE - edges[3]) / prec);
+}
+
+
+bool TrackPoint::inTheGrid(Grid grid,double * edges,double prec) {
+	return this->getGridX(edges,prec) == grid.gridX  &&  this->getGridY(edges, prec) == grid.gridY;
 }

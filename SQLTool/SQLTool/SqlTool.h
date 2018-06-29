@@ -6,13 +6,9 @@
 #include <string>
 #include "mysql.h"
 
-//using std::string;
-
 class SqlTool
 {
 private:
-	
-	//MYSQL_ROW column;
 
 public:	
 	MYSQL mysql;
@@ -20,7 +16,8 @@ public:
 	bool connectDB();
 	bool operationExcutor(const char* operation,MYSQL_RES* &res);
 	bool insertExcutor(const char* operation);
-	char* uuidGenerator(MYSQL_RES* &res);
+	char* getVariableFromDB(const char* operation);
+	//char* uuidGenerator(MYSQL_RES* &res);
 	static char* datetimeConvertor(int input);
 	SqlTool();
 	~SqlTool();

@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Track.h"
 #include <string>
-#include "SqlTool.h"
+
 
 using std::string;
 using std::to_string;
@@ -91,6 +91,50 @@ void Track::trackEndProcession(int endTime, int pointAmount, vector<TrackPoint>d
 	this->setPointAmount(pointAmount);
 	this->setLength(totallength);
 	this->historyPoint.assign(details.begin(), details.end());
+}
+
+int Track::NnPointOfGrid(int index1, int index2) {//先算出网格平均坐标，再得出最近点
+	if (index1 == index2)
+		return index1;
+	double tmpLongitude = 0, tmpLatitude = 0;
+	for (int counter = index1; counter <= index2; counter++) {
+		tmpLatitude += historyPoint[counter].CENTERLATITUDE;
+		tmpLongitude += historyPoint[counter].CENTERLONGITUDE;
+	}
+	tmpLatitude /= (index2 - index1 + 1);
+	tmpLongitude /= (index2 - index1 + 1);
+	int resIndex = -1;
+	double minBias = 800;//与网格均值点的最小偏移。处于计算量考虑，暂时用经纬度偏移量代替（若误差较大则改为实际距离）
+	for (int counter = index1; counter <= index2; counter++) {
+		double tmpBias = abs(historyPoint[counter].CENTERLATITUDE - tmpLatitude) + abs(historyPoint[counter].CENTERLONGITUDE - tmpLongitude);
+		if (tmpBias < minBias) {
+			minBias = tmpBias;
+			resIndex = counter;
+		}
+	}
+	return resIndex;
+}
+
+void Track::extractNnPoint(double* edges, double prec) {
+	Grid curGrid = { true,-1,-1,0,-1 };
+	for (int counter = 0; counter < this->POINTAMOUNT; counter++) {//TODO  考虑最后一个点！
+		int tmpGridX = historyPoint[counter].getGridX(edges, prec), tmpGridY = historyPoint[counter].getGridY(edges, prec);
+		historyPoint[counter].gridX = tmpGridX;
+		historyPoint[counter].gridY = tmpGridY;
+		//if 新格:计算目前的NnPoint,更新startIndex      旧格:更新endIndex
+		if (curGrid.inTheGrid(tmpGridX,tmpGridY)) {	//仍处于curGrid，则更新endIndex
+			curGrid.endIndex = counter;
+		}
+		else {
+			if(counter!=0)
+				this->featurePointIndex.push_back(NnPointOfGrid(curGrid.startIndex, curGrid.endIndex));
+			curGrid.startIndex = counter;
+			curGrid.endIndex = counter;
+			curGrid.gridX = tmpGridX;
+			curGrid.gridY = tmpGridY;
+		}
+	}
+	this->featurePointIndex.push_back(NnPointOfGrid(curGrid.startIndex, curGrid.endIndex));
 }
 
 Track::~Track()

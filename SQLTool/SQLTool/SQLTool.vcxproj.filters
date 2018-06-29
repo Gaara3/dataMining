@@ -39,6 +39,21 @@
     <ClInclude Include="TrackPoint.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Grid.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MiningTools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Segment.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -66,6 +81,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TrackPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MiningTools.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

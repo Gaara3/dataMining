@@ -3,8 +3,6 @@
 #include <string>
 #include <time.h>
 
-//using std::string;
-//using std::to_string;
 
 SqlTool::SqlTool()
 {
@@ -17,7 +15,7 @@ SqlTool::~SqlTool()
 	mysql_close(&mysql);
 }
 
-bool SqlTool::connectDB() {
+bool SqlTool::connectDB() {//TODO   封装传入参数
 	mysql_init(&this->mysql);
 	if (!mysql_real_connect(&mysql, "localhost", "root", "root", "new_bigdata", 3306, NULL, 0)) {
 		printf("Something wrong when connecting to the Database:%s\n", mysql_error(&mysql));
@@ -48,12 +46,20 @@ bool SqlTool::insertExcutor(const char* operation) {
 	}
 	return true;
 }
-char* SqlTool::uuidGenerator(MYSQL_RES* &res)
-{
-	this->operationExcutor("select UUID()", res);
+
+char* SqlTool::getVariableFromDB(const char* operation) {	//获取统计信息max、min或数据库信息version、char等   单一返回值
+	mysql_query(&this->mysql, operation);
+	res = mysql_store_result(&this->mysql);
 	MYSQL_ROW column = mysql_fetch_row(res);
-	return column[0];
+	return strlen(column[0]) > 0 ? column[0] : const_cast<char*>("None");
 }
+
+//char* SqlTool::uuidGenerator(MYSQL_RES* &res)	
+//{
+//	this->operationExcutor("select UUID()", res);
+//	MYSQL_ROW column = mysql_fetch_row(res);
+//	return column[0];
+//}
 
 char* SqlTool::datetimeConvertor(int input) {
 	time_t t = input;
@@ -61,15 +67,4 @@ char* SqlTool::datetimeConvertor(int input) {
 	char* res =new char[19];
 	sprintf(res, "%4d-%02d-%02d %02d:%02d:%02d", 1900 + ltm->tm_year, 1 + ltm->tm_mon, ltm->tm_mday, ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
 	return res;
-	/*return to_string(ltm->tm_year + 1900).append("-").append(to_string(ltm->tm_mon + 1)).append("-").append(to_string(ltm->tm_mday + 1)).append(" ").append(to_string(ltm->tm_hour))
-		.append(":").append(to_string(ltm->tm_min)).append(":").append(to_string(ltm->tm_sec));*/
-
 }
-
-
-//int main() {
-//	int t = 1511008795;
-//	SqlTool tool;
-//	printf(tool.timeStampConvertor(t));
-//	system("pause");
-//}

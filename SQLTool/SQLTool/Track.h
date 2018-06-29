@@ -3,6 +3,8 @@
 #include <vector>
 #include<string>
 #include "TrackPoint.h"
+#include "SqlTool.h"
+#include "Grid.h"
 
 using std::vector;
 using std::string;
@@ -30,7 +32,7 @@ private:
 	
 public:
 	vector<TrackPoint> historyPoint;
-	vector<TrackPoint> featurePoint;	
+	vector<int> featurePointIndex;	
 
 	Track();
 	Track(int trackID, char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,int STARTTIME);
@@ -46,5 +48,7 @@ public:
 	void setLength(double length);
 	string insertSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
+	void extractNnPoint(double* edges,double prec);
+	int NnPointOfGrid(int index1, int index2);
 };
 

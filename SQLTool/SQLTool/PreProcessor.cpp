@@ -18,10 +18,11 @@ double* PreProcessor::targetsPreProcession(vector<char*> targets, vector<Track> 
 	int targetsNum = targets.size();
 	bool newTarget = true;
 	int trackID = 0;
-	double edges[4]{ -181,181, -91,  91 };
+	double* edges = getEdges();//直接利用mysql找出经纬极值
+	printf("%lf  %lf   %lf  %lf\n", edges[0], edges[1], edges[2], edges[3]);
 	for (int counter = 0; counter < targetsNum; counter++) {
 		//printf("********************************new Target********************************\n");
-		oneTargetPreProcession(targets[counter], HistoryTracks, newTarget,trackID,edges);
+		oneTargetPreProcession(targets[counter], HistoryTracks, newTarget,trackID);
 		newTarget = true;
 	}
 	return edges;
@@ -30,20 +31,22 @@ double* PreProcessor::targetsPreProcession(vector<char*> targets, vector<Track> 
 /*
 	对特定目标进行预处理
 */
-void PreProcessor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks,bool &newTarget,int &trackID,double edges[4]) {
+void PreProcessor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks,bool &newTarget,int &trackID) {
 
 	Track tmp;
 	int lastPosixtime = 0;
 	int orderNumber = 0;
 	double totalLength = 0;
 	double lastLongitude = 181, lastLatitude = 91;
+	//Grid grid = { true,-1,-1,0,0 };  //newGrid,gridX,gridY,startIndex,endIndex
 	sqlTool.operationExcutor(Track::getTargetRecords(target), res);
 	mysql_autocommit(&sqlTool.mysql, 0);
 	MYSQL_RES *targetRecord = res;
-	//HistoryTrack* curTrack;
 	vector<TrackPoint> details;
+	//int *featurePoint = new int[];//特征点指针
+	//vector<int>featurePoint;
 	while (column = mysql_fetch_row(targetRecord)) {		
-		pointPreprocession(details,column, HistoryTracks,trackID, lastPosixtime,orderNumber, newTarget,totalLength,lastLongitude,lastLatitude,edges);
+		pointPreprocession(details,column, HistoryTracks,trackID, lastPosixtime,orderNumber, newTarget,totalLength,lastLongitude,lastLatitude);
 		newTarget = false;//TODO   改进
 	}
 	//单目标最后一段轨迹需要专门处理一次
@@ -53,7 +56,7 @@ void PreProcessor::oneTargetPreProcession(char* target, vector<Track>&HistoryTra
 }
 
 
-void PreProcessor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, vector<Track>&HistoryTracks,int &trackID, int &lastPosixTime,int &orderNumber,bool &newTarget,double &totalLength,double &lastLongitude,double& lastLatitude,double edges[4]) {
+void PreProcessor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, vector<Track>&HistoryTracks,int &trackID, int &lastPosixTime,int &orderNumber,bool &newTarget,double &totalLength,double &lastLongitude,double& lastLatitude) {
 	
 	double longitude = atof(column[3]), latitude = atof(column[4]), altitude = atof(column[5]);
 	TrackPoint point = TrackPoint(column[0], column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8]);
@@ -73,15 +76,17 @@ void PreProcessor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW colum
 			details.clear();	
 		}
 		HistoryTracks.push_back(Track(trackID,point.getTargetID(), point.getSource(),column[9], point.getOperator(), point.getTime()));	//轨迹数组加入新track
+		//details.clear();
 	}
 	
 	//该点本身所需的操作:确定trackID,确定orderNumber，更新lastPosixTime，插入数据库
 	point.setTrackID(trackID);
 	lastPosixTime = point.getTime();
 	point.setOderNumber(++orderNumber);
-	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离，并更新last坐标
-	updateEdges(point.CENTERLONGITUDE, point.CENTERLATITUDE, edges);
 	details.push_back(point);
+
+	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离，并更新last坐标
+	
 	sqlTool.insertExcutor(point.insertSQL().data());	
 	//printf("                              new point%d                              \n", orderNumber);
 }
@@ -99,13 +104,22 @@ double PreProcessor::distanceBetweenPoints(double &lastLongitude, double &lastLa
 	return res;
 }
 
-void PreProcessor::updateEdges(double longitude, double latitude, double edges[4]) {//LargestLongitude,smallestLongitude,largestLatitude,smallestLatitude
-	if (longitude > edges[0])
-		edges[0] = longitude;
-	if (longitude < edges[1])
-		edges[1] = longitude;
-	if (latitude > edges[2])
-		edges[2] = latitude;
-	if (latitude < edges[3])
-		edges[3] = latitude;
+
+double* PreProcessor::getEdges() {
+	double edges[4];
+	edges[0] = atof(sqlTool.getVariableFromDB("SELECT max(LONGITUDE)from m_preprocessing;"));
+	edges[1] = atof(sqlTool.getVariableFromDB("SELECT min(LONGITUDE)from m_preprocessing;"));
+	edges[2] = atof(sqlTool.getVariableFromDB("SELECT max(LATITUDE)from m_preprocessing;"));
+	edges[3] = atof(sqlTool.getVariableFromDB("SELECT min(LATITUDE)from m_preprocessing;"));
+	return edges;
+}
+
+
+
+
+void PreProcessor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
+	int trackNum = tracks.size();
+	for (int counter = 0; counter < trackNum; counter++) {
+		tracks[counter].extractNnPoint(edges,prec);
+	}
 }

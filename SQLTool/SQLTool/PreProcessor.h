@@ -6,11 +6,12 @@
 #include <vector>
 #include <math.h>
 #include "SqlTool.h"
+#include "Grid.h"
 
 using std::vector;
 class PreProcessor
 {
-	
+	double prec = 0.1;
 public:
 	SqlTool sqlTool;
 	MYSQL_RES *res;
@@ -18,9 +19,10 @@ public:
 	PreProcessor();
 	~PreProcessor();
 	double* targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
-	void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID,double edges[4]);
-	void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude,double edges[4]);
+	void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
+	void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);
 	double distanceBetweenPoints(double& lastLongitude, double& lastLatitude, double longitude, double latitude);
-	void updateEdges(double longitude, double latitude, double edges[4]);
+	double* getEdges();
+	void tracksExtract(vector<Track>&tracks,double* edges,double prec);
 };
 

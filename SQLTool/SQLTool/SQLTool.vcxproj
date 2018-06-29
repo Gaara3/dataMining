@@ -161,6 +161,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DataMiner.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="MiningTools.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Segment.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPoint.h" />
     <ClInclude Include="Main.h" />
@@ -168,9 +172,12 @@
     <ClInclude Include="SqlTool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Vector2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataMiner.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="MiningTools.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPoint.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -184,6 +191,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="dataFromDB.cpp" />
+    <ClCompile Include="Vector2D.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
