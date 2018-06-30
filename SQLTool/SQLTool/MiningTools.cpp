@@ -18,7 +18,9 @@ double MiningTools::distanceBetweenLines(Segment sg1, Segment sg2,double* weight
 
 double MiningTools::verticalDistBetweenLines(Segment sg1, Segment sg2)
 {
-	return 0.0;
+	Point pro1 = projectionOfPoint(sg1, sg2.start);
+	Point pro2 = projectionOfPoint(sg1, sg2.end);
+	Vector2D 
 }
 
 double MiningTools::horizontalDistBetweenLines(Segment sg1, Segment sg2)
@@ -37,5 +39,6 @@ Point MiningTools::projectionOfPoint(Segment sg, Point p)
 	Vector2D sp = Vector2D(p.x - sg.start.x, p.y - sg.start.x);//start to p
 	Vector2D se = Vector2D(sg.end.x - sg.start.x, sg.end.y - sg.start.y); //start to end
 	double alph = (sp*se) / (vectorMag(se) *vectorMag(se));
-	
+	Vector2D pro = s + (se * alph);
+	return Point{ pro.x, pro.y };
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <math.h>
+#include "Point.h"
 class Vector2D {
 public:
 	double x, y;
@@ -10,6 +11,8 @@ public:
 	Vector2D(const Vector2D &a) : x(a.x), y(a.y) {}
 	// 带三个参数的构造函数,三个值完成初始化
 	Vector2D(double nx, double ny) : x(nx), y(ny) {}
+	//传入两点构造向量
+	Vector2D(Point a,Point b):x(b.x-a.x),y(b.y-a.y){}
 	// 重载赋值运算符
 	Vector2D &operator =(const Vector2D &a) {
 		x = a.x; y = a.y;
