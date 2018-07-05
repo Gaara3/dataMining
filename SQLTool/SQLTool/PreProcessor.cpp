@@ -1,20 +1,20 @@
 ﻿#include "stdafx.h"
-#include "PreProcessor.h"
+#include "Processor.h"
 #include "SqlTool.h"
 
 
-PreProcessor::PreProcessor()
+Processor::Processor()
 {
 }
 
 
-PreProcessor::~PreProcessor()
+Processor::~Processor()
 {
 }
 /*
 	对入参列表的所有target进行预处理
 */
-double* PreProcessor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
+double* Processor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
 	int targetsNum = targets.size();
 	bool newTarget = true;
 	int trackID = 0;
@@ -31,7 +31,7 @@ double* PreProcessor::targetsPreProcession(vector<char*> targets, vector<Track> 
 /*
 	对特定目标进行预处理
 */
-void PreProcessor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks,bool &newTarget,int &trackID) {
+void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks,bool &newTarget,int &trackID) {
 
 	Track tmp;
 	int lastPosixtime = 0;
@@ -56,7 +56,7 @@ void PreProcessor::oneTargetPreProcession(char* target, vector<Track>&HistoryTra
 }
 
 
-void PreProcessor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, vector<Track>&HistoryTracks,int &trackID, int &lastPosixTime,int &orderNumber,bool &newTarget,double &totalLength,double &lastLongitude,double& lastLatitude) {
+void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, vector<Track>&HistoryTracks,int &trackID, int &lastPosixTime,int &orderNumber,bool &newTarget,double &totalLength,double &lastLongitude,double& lastLatitude) {
 	
 	double longitude = atof(column[3]), latitude = atof(column[4]), altitude = atof(column[5]);
 	TrackPoint point = TrackPoint(column[0], column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8]);
@@ -91,7 +91,7 @@ void PreProcessor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW colum
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
-double PreProcessor::distanceBetweenPoints(double &lastLongitude, double &lastLatitude, double longitude, double latitude) {
+double Processor::distanceBetweenPoints(double &lastLongitude, double &lastLatitude, double longitude, double latitude) {
 	double res = 0;
 	if (lastLatitude <= 90 && lastLongitude <= 180) {	//当一段轨迹完结，设置异常值以便于新一段计算
 		double p = 0.017453292519943295;    // Math.PI / 180
@@ -105,7 +105,7 @@ double PreProcessor::distanceBetweenPoints(double &lastLongitude, double &lastLa
 }
 
 
-double* PreProcessor::getEdges() {
+double* Processor::getEdges() {
 	double edges[4];
 	edges[0] = atof(sqlTool.getVariableFromDB("SELECT max(LONGITUDE)from m_preprocessing;"));
 	edges[1] = atof(sqlTool.getVariableFromDB("SELECT min(LONGITUDE)from m_preprocessing;"));
@@ -117,7 +117,7 @@ double* PreProcessor::getEdges() {
 
 
 
-void PreProcessor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
+void Processor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
 	int trackNum = tracks.size();
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].extractNnPoint(edges,prec);

@@ -137,6 +137,39 @@ void Track::extractNnPoint(double* edges, double prec) {
 	this->featurePointIndex.push_back(NnPointOfGrid(curGrid.startIndex, curGrid.endIndex));
 }
 
+void Track::MDLExtract() {
+	int star_index = 1, length = 1, count = 1,curr_index = 0;
+	int len = this->featurePointIndex.size();
+	while (star_index + length < len | star_index + length == len) {
+		curr_index = star_index + length;
+		double cost_par = MDL_par(star_index, curr_index);
+		double cost_nopar = MDL_nopar(star_index, curr_index)+0.001;
+		if (cost_par > cost_nopar) {
+			count++;
+			//TODO
+			mdlPointIndex.push_back(featurePointIndex[curr_index - 1]);
+			star_index = curr_index + 1;
+			length = 1;
+		}
+		else {
+			length++;
+		}
+
+	}
+}
+
+double Track::MDL_par(int star_index, int cur_index) {
+
+}
+
+double Track::MDL_nopar(int star_index, int cur_index) {
+
+}
+
+double Track::lth(int star_index, int cur_index) {
+
+}
+
 Track::~Track()
 {
 }

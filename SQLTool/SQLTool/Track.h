@@ -33,6 +33,7 @@ private:
 public:
 	vector<TrackPoint> historyPoint;
 	vector<int> featurePointIndex;	
+	vector<int> mdlPointIndex;
 
 	Track();
 	Track(int trackID, char* TARGETID, char* SOURCE, char* TASKINFO, char* OPERATOR,int STARTTIME);
@@ -50,5 +51,9 @@ public:
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
 	void extractNnPoint(double* edges,double prec);
 	int NnPointOfGrid(int index1, int index2);
+	void MDLExtract();
+	double MDL_par(int starIdx, int curIdx);
+	double lth(int star_index, int cur_index);
+	double MDL_nopar(int starIdx, int endIdx);
 };
 

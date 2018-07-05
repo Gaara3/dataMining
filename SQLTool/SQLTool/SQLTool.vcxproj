@@ -168,7 +168,7 @@
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPoint.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="PreProcessor.h" />
+    <ClInclude Include="Processor.h" />
     <ClInclude Include="SqlTool.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

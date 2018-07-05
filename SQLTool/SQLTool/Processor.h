@@ -9,15 +9,15 @@
 #include "Grid.h"
 
 using std::vector;
-class PreProcessor
+class Processor
 {
 	double prec = 0.1;
 public:
 	SqlTool sqlTool;
 	MYSQL_RES *res;
 	MYSQL_ROW column;
-	PreProcessor();
-	~PreProcessor();
+	Processor();
+	~Processor();
 	double* targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
 	void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
 	void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);

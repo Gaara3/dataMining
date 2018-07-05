@@ -27,9 +27,6 @@
     <ClInclude Include="SqlTool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PreProcessor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Main.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Vector2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Processor.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
