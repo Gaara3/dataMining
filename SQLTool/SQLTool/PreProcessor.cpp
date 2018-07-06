@@ -123,3 +123,11 @@ void Processor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
 		tracks[counter].extractNnPoint(edges,prec);
 	}
 }
+
+void Processor::tracksMDL(vector<Track> &tracks) {
+	int trackNum = tracks.size();
+	for (int counter = 0; counter < trackNum; counter++) {
+		tracks[counter].MDLExtract();
+	}
+}
+

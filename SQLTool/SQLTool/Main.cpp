@@ -26,6 +26,7 @@ int main() {
 	double* edges = Processor.targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
 	printf("%lf   %lf   %lf   %lf\n", edges[0], edges[1], edges[2], edges[3]);
 	Processor.tracksExtract(HistoryTracks,edges,prec);
+	Processor.tracksMDL(HistoryTracks);
 	mysql_free_result(Processor.res);
 	system("pause");
 	return 0;

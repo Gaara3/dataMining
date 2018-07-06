@@ -24,5 +24,6 @@ public:
 	double distanceBetweenPoints(double& lastLongitude, double& lastLatitude, double longitude, double latitude);
 	double* getEdges();
 	void tracksExtract(vector<Track>&tracks,double* edges,double prec);
+	void tracksMDL(vector<Track> &tracks);
 };
 

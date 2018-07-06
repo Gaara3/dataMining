@@ -59,21 +59,21 @@ public:
 		return *this;
 	}
 	Vector2D &operator /=(double a) {
-		float oneOverA = 1.0f / a;
+		double oneOverA = 1.0f / a;
 		x *= oneOverA; y *= oneOverA;
 		return *this;
 	}
 	// 向量标准化
 	void normalize() {
-		float magSq = x * x + y * y;
+		double magSq = x * x + y * y;
 		if (magSq > 0.0f) { // 检查除零
-			float oneOverMag = 1.0f / sqrt(magSq);
+			double oneOverMag = 1.0f / sqrt(magSq);
 			x *= oneOverMag;
 			y *= oneOverMag;
 		}
 	}
 	// 向量点乘,重载乘法运算符
-	float operator *(const Vector2D &a) const {
+	double operator *(const Vector2D &a) const {
 		return x * a.x + y * a.y ;
 	}
 };
@@ -84,13 +84,13 @@ inline double vectorMag(const Vector2D &a) {
 }
 
 // 标量乘法
-inline Vector2D operator *(float k, const Vector2D &v) {
+inline Vector2D operator *(double k, const Vector2D &v) {
 	return Vector2D(k*v.x, k*v.y);
 }
 // 计算两点间距离
-inline float distance(const Vector2D &a,const Vector2D &b) {
-	float dx = a.x -b.x;
-	float dy = a.y -b.y;
+inline double distance(const Vector2D &a,const Vector2D &b) {
+	double dx = a.x -b.x;
+	double dy = a.y -b.y;
 	return sqrt(dx*dx + dy * dy);
 }
 

@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Track.h"
+#include "MiningTools.h"
 #include <string>
 
 
@@ -140,34 +141,56 @@ void Track::extractNnPoint(double* edges, double prec) {
 void Track::MDLExtract() {
 	int star_index = 1, length = 1, count = 1,curr_index = 0;
 	int len = this->featurePointIndex.size();
-	while (star_index + length < len | star_index + length == len) {
+	mdlPointIndex.push_back(featurePointIndex[0]);
+	while (star_index + length < len ) {
 		curr_index = star_index + length;
 		double cost_par = MDL_par(star_index, curr_index);
 		double cost_nopar = MDL_nopar(star_index, curr_index)+0.001;
 		if (cost_par > cost_nopar) {
 			count++;
-			//TODO
-			mdlPointIndex.push_back(featurePointIndex[curr_index - 1]);
+			mdlPointIndex.push_back(featurePointIndex[curr_index - 1]);//TODO  待考察
 			star_index = curr_index + 1;
 			length = 1;
 		}
 		else {
 			length++;
 		}
-
 	}
+	mdlPointIndex.push_back(featurePointIndex[len - 1]);
 }
 
 double Track::MDL_par(int star_index, int cur_index) {
-
+	double res = 0;
+	int x1 = historyPoint[featurePointIndex[star_index]].gridX;
+	int y1 = historyPoint[featurePointIndex[star_index]].gridY;
+	int x2 = historyPoint[featurePointIndex[cur_index]].gridX;
+	int y2 = historyPoint[featurePointIndex[cur_index]].gridY;
+	res += sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+	double weights[3] = { 1,1,0 };//此时当做无水平分量
+	Segment s2e = Segment{ Point{historyPoint[featurePointIndex[star_index]].gridX,historyPoint[featurePointIndex[star_index]].gridY },Point{ historyPoint[featurePointIndex[cur_index]].gridX,historyPoint[featurePointIndex[cur_index]].gridY } };
+	for (int counter = star_index; counter < cur_index; counter++) {
+		Segment temp = Segment{ Point{ historyPoint[featurePointIndex[counter]].gridX,historyPoint[featurePointIndex[counter]].gridY },Point{ historyPoint[featurePointIndex[counter+1]].gridX,historyPoint[featurePointIndex[counter+1]].gridY } };
+		res += MiningTools::distanceBetweenLines(s2e,temp,weights);
+	}
+	return res;
 }
 
 double Track::MDL_nopar(int star_index, int cur_index) {
-
+	return lth(star_index,cur_index);
 }
 
 double Track::lth(int star_index, int cur_index) {
-
+	double res = 0;
+	for (int counter1 = star_index; counter1 < cur_index; counter1++) {
+		for (int counter2 = counter1+1; counter2 <= cur_index; counter2++) {
+			int x1 = historyPoint[featurePointIndex[counter1]].gridX;
+			int y1 = historyPoint[featurePointIndex[counter1]].gridY;
+			int x2 = historyPoint[featurePointIndex[counter2]].gridX;
+			int y2 = historyPoint[featurePointIndex[counter2]].gridY;
+			res += sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+		}
+	}
+	return res;
 }
 
 Track::~Track()
