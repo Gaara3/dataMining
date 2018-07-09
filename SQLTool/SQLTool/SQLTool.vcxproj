@@ -161,10 +161,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DataMiner.h" />
+    <ClInclude Include="DataPoint.h" />
+    <ClInclude Include="DBSCAN.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="MiningTools.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Segment.h" />
+    <ClInclude Include="SimulatedAnnualingSolver.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPoint.h" />
     <ClInclude Include="Main.h" />
@@ -176,8 +179,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataMiner.cpp" />
+    <ClCompile Include="DataPoint.cpp" />
+    <ClCompile Include="DBSCAN.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="MiningTools.cpp" />
+    <ClCompile Include="SimulatedAnnualingSolver.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPoint.cpp" />
     <ClCompile Include="Main.cpp" />

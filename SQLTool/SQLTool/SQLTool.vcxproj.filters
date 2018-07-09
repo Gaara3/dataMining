@@ -54,6 +54,15 @@
     <ClInclude Include="Processor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SimulatedAnnualingSolver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DataPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DBSCAN.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +99,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Vector2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatedAnnualingSolver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DataPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DBSCAN.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
