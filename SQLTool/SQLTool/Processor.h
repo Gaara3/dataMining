@@ -7,6 +7,8 @@
 #include <math.h>
 #include "SqlTool.h"
 #include "Grid.h"
+#include "Segment.h"
+
 
 using std::vector;
 class Processor
@@ -25,5 +27,7 @@ public:
 	double* getEdges();
 	void tracksExtract(vector<Track>&tracks,double* edges,double prec);
 	void tracksMDL(vector<Track> &tracks);
+	vector<Segment>tracks2Segment(vector<Track>&tracks);
+	double** disMatrice(vector<Segment>);
 };
 

@@ -5,6 +5,7 @@
 #include "TrackPoint.h"
 #include "SqlTool.h"
 #include "Grid.h"
+#include "Segment.h"
 
 using std::vector;
 using std::string;
@@ -55,5 +56,6 @@ public:
 	double MDL_par(int starIdx, int curIdx);
 	double lth(int star_index, int cur_index);
 	double MDL_nopar(int starIdx, int endIdx);
+	void segGenerate(vector<Segment> &segs);
 };
 

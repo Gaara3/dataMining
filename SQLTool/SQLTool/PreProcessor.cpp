@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Processor.h"
 #include "SqlTool.h"
-
+#include "MiningTools.h"
 
 Processor::Processor()
 {
@@ -51,7 +51,7 @@ void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks
 	}
 	//单目标最后一段轨迹需要专门处理一次
 	HistoryTracks.back().trackEndProcession(lastPosixtime, orderNumber, details,totalLength);
-	sqlTool.insertExcutor(HistoryTracks.back().insertSQL().data());
+	//sqlTool.insertExcutor(HistoryTracks.back().insertSQL().data());
 	mysql_commit(&sqlTool.mysql);
 }
 
@@ -67,7 +67,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 		if (!newTarget) {//newTarget 已涵盖队列为空的情况，不再另行判断
 			Track *lastTrack = &HistoryTracks.back();
 			lastTrack->trackEndProcession(lastPosixTime, orderNumber, details,totalLength);
-			sqlTool.insertExcutor(lastTrack->insertSQL().data());	//为了不传类别无关变量res，暂不加入封装
+			//sqlTool.insertExcutor(lastTrack->insertSQL().data());	//为了不传类别无关变量res，暂不加入封装
 			mysql_commit(&sqlTool.mysql);
 			//引用值重置，考虑封装
 			lastPosixTime = 0;			
@@ -87,7 +87,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离，并更新last坐标
 	
-	sqlTool.insertExcutor(point.insertSQL().data());	
+	//sqlTool.insertExcutor(point.insertSQL().data());	
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
@@ -129,5 +129,44 @@ void Processor::tracksMDL(vector<Track> &tracks) {
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].MDLExtract();
 	}
+}
+
+vector<Segment> Processor::tracks2Segment(vector<Track>& tracks)
+{
+	int trackNum = tracks.size();
+	vector<Segment> result;
+	for (int counter = 0; counter < trackNum; counter++) {
+		tracks[counter].segGenerate(result);
+	}
+	return result;
+}
+
+double** Processor::disMatrice(vector<Segment>segs)
+{
+	int size = segs.size();
+	double **disMat = new double*[size];
+	bool** matFlag = new bool*[size];
+	double weights[3] = { 0.5,1,2 };
+	for (int counter = 0; counter < size; counter++) {
+		disMat[counter] = new double[size];
+		matFlag[counter] = new bool[size];
+	}
+
+	for (int x = 0; x < size; x++) {
+		for (int y = 0; y < size; y++)
+			matFlag[x][y] = false;
+	}
+	for (int xCounter = 0; xCounter < size; xCounter++) {
+		for (int yCounter = 0; yCounter < size; yCounter++) {
+			if (matFlag[xCounter][yCounter])	//该位置的值计算过，则略过
+				continue;
+			disMat[xCounter][yCounter] = xCounter==yCounter?0:MiningTools::distanceBetweenLines(segs[xCounter], segs[yCounter], weights);
+			disMat[yCounter][xCounter] = disMat[xCounter][yCounter];
+			matFlag[xCounter][yCounter] = true;
+			matFlag[yCounter][xCounter] = true;
+			//printf("disof %d,%d:%lf\n", xCounter, yCounter, disMat[xCounter][yCounter]);
+		}
+	}
+	return disMat;
 }
 

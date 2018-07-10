@@ -27,6 +27,8 @@ int main() {
 	printf("%lf   %lf   %lf   %lf\n", edges[0], edges[1], edges[2], edges[3]);
 	Processor.tracksExtract(HistoryTracks,edges,prec);
 	Processor.tracksMDL(HistoryTracks);
+	vector<Segment> segments =Processor.tracks2Segment(HistoryTracks);
+	double **disMat=Processor.disMatrice(segments);	//生成距离矩阵
 	mysql_free_result(Processor.res);
 	system("pause");
 	return 0;
