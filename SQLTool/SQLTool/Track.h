@@ -48,6 +48,7 @@ public:
 	void setEndTime(int endTime);
 	void setTrackID(int trackID);
 	void setLength(double length);
+	char* getTargetID();
 	string insertSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
 	void extractNnPoint(double* edges,double prec);
@@ -57,5 +58,6 @@ public:
 	double lth(int star_index, int cur_index);
 	double MDL_nopar(int starIdx, int endIdx);
 	void segGenerate(vector<Segment> &segs);
+
 };
 

@@ -19,13 +19,12 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 	//this->dimNum = DIME_NUM;    //设置数据维度
 	this->distMat = distMat;
 	this->dataNum = size;
-	this->dataSets = vector<DataPoint>(dataNum);
 
 	for (int counter = 0; counter < dataNum; counter++) {	//DataSets 初始化，置idx为counter,clusterID为-1，visited为false
 		dataSets.push_back(DataPoint(counter));
 	}
 
-	for (unsigned long i = 0; i<dataNum; i++)
+	for (int i = 0; i<dataNum; i++)
 	{
 		SetArrivalPoints(dataSets[i],i);            //计算数据点领域内对象
 	}
@@ -40,7 +39,7 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 返回值： true;    */
 void DBSCAN::SetArrivalPoints(DataPoint& dp,int idx)
 {
-	for (unsigned long i = 0; i<dataNum; i++)                //对每个数据点执行
+	for (int i = 0; i<dataNum; i++)                //对每个数据点执行
 	{
 		//double distance = GetDistance(dataSets[i], dp);    //获取与特定点之间的距离
 		if (this->distMat[idx][i] <= radius && i != dp.GetDpId())        //若距离小于半径，并且特定点的id与dp的id不同执行
@@ -61,10 +60,10 @@ void DBSCAN::SetArrivalPoints(DataPoint& dp,int idx)
 说明：执行聚类操作
 参数：
 返回值： true;    */
-bool DBSCAN::DoDBSCANRecursive()
+int DBSCAN::DoDBSCANRecursive()
 {
-	unsigned long clusterId = 0;                        //聚类id计数，初始化为0
-	for (unsigned long i = 0; i<dataNum; i++)            //对每一个数据点执行
+	int clusterId = 0;                        //聚类id计数，初始化为0
+	for (int i = 0; i<dataNum; i++)            //对每一个数据点执行
 	{
 		DataPoint& dp = dataSets[i];                    //取到第i个数据点对象
 		if (!dp.isVisited() && dp.IsKey())            //若对象没被访问过，并且是核心对象执行
@@ -78,22 +77,34 @@ bool DBSCAN::DoDBSCANRecursive()
 	}
 
 	cout << "共聚类" << clusterId << "个" << endl;        //算法完成后，输出聚类个数
-	return true;    //返回
+	return clusterId;    //返回
+}
+
+vector<int>* DBSCAN::clusterGenerate()
+{
+	int clusterNum = this->DoDBSCANRecursive();
+	vector<int>* clusterInfo = new vector<int>[clusterNum];
+	for (int counter = 0; counter < dataNum; counter++) {
+		int curCluster = dataSets[counter].GetClusterId();
+		if (curCluster != -1)
+			clusterInfo[curCluster].push_back(counter);
+	}
+	return clusterInfo;
 }
 
 /*
 函数：对数据点领域内的点执行聚类操作
 说明：采用递归的方法，深度优先聚类数据
 参数：
-unsigned long dpID;            //数据点id
-unsigned long clusterId;    //数据点所属簇id
+int dpID;            //数据点id
+int clusterId;    //数据点所属簇id
 返回值： void;    */
-void DBSCAN::KeyPointCluster(unsigned long dpID, unsigned long clusterId)
+void DBSCAN::KeyPointCluster(int dpID, int clusterId)
 {
 	DataPoint& srcDp = dataSets[dpID];        //获取数据点对象
 	if (!srcDp.IsKey())    return;
-	vector<unsigned long>& arrvalPoints = srcDp.GetArrivalPoints();        //获取对象领域内点ID列表
-	for (unsigned long i = 0; i<arrvalPoints.size(); i++)
+	vector<int>& arrvalPoints = srcDp.GetArrivalPoints();        //获取对象领域内点ID列表
+	for (int i = 0; i<arrvalPoints.size(); i++)
 	{
 		DataPoint& desDp = dataSets[arrvalPoints[i]];    //获取领域内点数据点
 		if (!desDp.isVisited())                            //若该对象没有被访问过执行

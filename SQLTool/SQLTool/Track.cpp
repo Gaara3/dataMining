@@ -62,6 +62,11 @@ void Track::setLength(double length){
 	this->length = length;
 }
 
+char * Track::getTargetID()
+{
+	return this->TARGETID;
+}
+
 string Track::insertSQL() {
 	
 	string insertSql = "insert into m_historytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,SOURCE,TASKINFO,CONFIDENCELEVEL,OPERATOR,LENGTH) values(";

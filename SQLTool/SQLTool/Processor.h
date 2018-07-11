@@ -29,5 +29,6 @@ public:
 	void tracksMDL(vector<Track> &tracks);
 	vector<Segment>tracks2Segment(vector<Track>&tracks);
 	double** disMatrice(vector<Segment>);
+	void processByTarget(vector <Track>);
 };
 

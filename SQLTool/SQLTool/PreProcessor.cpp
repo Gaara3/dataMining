@@ -170,3 +170,14 @@ double** Processor::disMatrice(vector<Segment>segs)
 	return disMat;
 }
 
+void Processor::processByTarget(vector<Track> historyTracks)
+{
+	int trackNum = historyTracks.size();
+	char* curTar = historyTracks[0].getTargetID();
+	for (int counter = 0; counter < trackNum; counter++) {
+		if (strcmp(curTar, historyTracks[counter].getTargetID()) == 0) {
+
+		}
+	}
+}
+

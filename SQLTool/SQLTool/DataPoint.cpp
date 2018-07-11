@@ -14,7 +14,7 @@ DataPoint::DataPoint(int id)
 }
 
 //构造函数
-DataPoint::DataPoint(unsigned long dpID, double* dimension, bool isKey) :isKey(isKey), dpID(dpID)
+DataPoint::DataPoint(int dpID, double* dimension, bool isKey) :isKey(isKey), dpID(dpID)
 {
 	//传递每维的维度数据
 	for (int i = 0; i<DIME_NUM; i++)
@@ -51,13 +51,13 @@ void DataPoint::SetKey(bool isKey)
 }
 
 //获取DpId方法
-unsigned long DataPoint::GetDpId()
+int DataPoint::GetDpId()
 {
 	return this->dpID;
 }
 
 //设置DpId方法
-void DataPoint::SetDpId(unsigned long dpID)
+void DataPoint::SetDpId(int dpID)
 {
 	this->dpID = dpID;
 }
@@ -76,19 +76,19 @@ void DataPoint::SetVisited(bool visited)
 }
 
 //GetClusterId方法
-long DataPoint::GetClusterId()
+int DataPoint::GetClusterId()
 {
 	return this->clusterId;
 }
 
 //GetClusterId方法
-void DataPoint::SetClusterId(long clusterId)
+void DataPoint::SetClusterId(int clusterId)
 {
 	this->clusterId = clusterId;
 }
 
 //GetArrivalPoints方法
-vector<unsigned long>& DataPoint::GetArrivalPoints()
+vector<int>& DataPoint::GetArrivalPoints()
 {
 	return arrivalPoints;
 }
