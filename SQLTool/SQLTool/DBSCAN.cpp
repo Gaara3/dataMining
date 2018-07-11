@@ -89,6 +89,14 @@ vector<int>* DBSCAN::clusterGenerate()
 		if (curCluster != -1)
 			clusterInfo[curCluster].push_back(counter);
 	}
+
+	for (int counter = 0; counter < clusterNum; counter++) {
+		printf("cluster %d:",counter);
+		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
+			printf("%d\t", *i);
+		}
+		printf("\n");
+	}
 	return clusterInfo;
 }
 

@@ -181,3 +181,7 @@ void Processor::processByTarget(vector<Track> historyTracks)
 	}
 }
 
+void Processor::clusterAnalyze(vector<int>* clusterInfo, vector<Segment> segments)
+{
+}
+

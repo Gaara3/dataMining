@@ -40,6 +40,7 @@ int main() {
 	dbscaner.Init(disMat, s, epsi, 2);
 	//dbscaner.DoDBSCANRecursive();
 	vector<int>* clusterInfo = dbscaner.clusterGenerate();
+	Processor.clusterAnalyse(clusterInfo, segments);
 	/*for (int counter1 = 0; counter1 < s; counter1++) {
 		for (int counter2 = 0; counter2 < s; counter2++)
 			printf("%lf\t", disMat[counter1][counter2]);
