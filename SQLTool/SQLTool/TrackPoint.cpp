@@ -111,8 +111,13 @@ UPPERLEFTLONGITUDE, UPPERLEFTLATITUDE, UPPERLEFTALTITUDE, LOWERRIGHTLONGITUDE, L
 
 }
 
-void  TrackPoint::setOderNumber(int orderNumber) {
+void  TrackPoint::setOrderNumber(int orderNumber) {
 	this->ORDERNUMBER = orderNumber;
+}
+
+int TrackPoint::getOrderNumber()
+{
+	return this->ORDERNUMBER;
 }
 
 void TrackPoint::setTrackID(int trackID) {

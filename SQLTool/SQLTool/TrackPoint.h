@@ -28,9 +28,7 @@ class TrackPoint
 		double CONFIDENCELEVEL;
 		char* OPERATOR;
 		char* RESERVE1;
-		char* RESERVE2;
-
-		
+		char* RESERVE2;		
 
 		static int intervalThreshold;
 
@@ -56,7 +54,8 @@ class TrackPoint
 		//	double LOWERRIGHTALTITUDE, double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,*/double CONFIDENCELEVEL,
 		//	string OPERATOR, string RESERVE1, string RESERVE2);
 
-		void setOderNumber(int orderNumber);
+		void setOrderNumber(int orderNumber);
+		int getOrderNumber();
 		void setTrackID(int trackID);
 		bool headOfTrack(int lastPosixTime);
 		static char* datetimeConvertor(int input);

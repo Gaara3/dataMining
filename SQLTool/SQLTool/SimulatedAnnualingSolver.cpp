@@ -14,7 +14,7 @@ SimulatedAnnualingSolver::SimulatedAnnualingSolver(int rand_seed)
 	m_k(1),
 	m_t_min(0.01),
 	m_iters_fixed_T(100),
-	m_print_position(true),	//为debug改为true
+	m_print_position(false),	//为debug改为true
 	m_step_size(1),
 	m_randGenerator(rand_seed)
 {

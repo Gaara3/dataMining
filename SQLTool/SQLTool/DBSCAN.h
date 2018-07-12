@@ -14,10 +14,11 @@ private:
 	double radius;                    //半径
 	  int dataNum;            //数据数量
 	  int minPTs;            //邻域最小数据个数
-	double **distMat;				//距离矩阵
+	//double **distMat;				//距离矩阵
+	int clusterNum;
 
 	//double GetDistance(DataPoint& dp1, DataPoint& dp2);                    //距离函数
-	void SetArrivalPoints(DataPoint& dp,int idx);                                //设置数据点的领域点列表
+	void SetArrivalPoints(DataPoint& dp,int idx,double ** distMat);                                //设置数据点的领域点列表
 	void KeyPointCluster(int i, int clusterId);    //对数据点领域内的点执行聚类操作
 public:
 	DBSCAN() {}                    //默认构造函数

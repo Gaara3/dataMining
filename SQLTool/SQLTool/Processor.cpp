@@ -11,6 +11,10 @@ Processor::Processor()
 Processor::~Processor()
 {
 }
+
+SqlTool Processor::sqlTool ;
+MYSQL_RES* Processor::res;
+MYSQL_ROW Processor::column;
 /*
 	对入参列表的所有target进行预处理
 */
@@ -82,7 +86,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	//该点本身所需的操作:确定trackID,确定orderNumber，更新lastPosixTime，插入数据库
 	point.setTrackID(trackID);
 	lastPosixTime = point.getTime();
-	point.setOderNumber(++orderNumber);
+	point.setOrderNumber(++orderNumber);
 	details.push_back(point);
 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离，并更新last坐标
@@ -179,5 +183,10 @@ void Processor::processByTarget(vector<Track> historyTracks)
 
 		}
 	}
+}
+
+void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo)
+{
+
 }
 

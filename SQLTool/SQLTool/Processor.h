@@ -15,20 +15,21 @@ class Processor
 {
 	double prec = 0.1;
 public:
-	SqlTool sqlTool;
-	MYSQL_RES *res;
-	MYSQL_ROW column;
+	static SqlTool sqlTool;
+	static MYSQL_RES *res;
+	static MYSQL_ROW column;
 	Processor();
 	~Processor();
-	double* targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
-	void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
-	void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);
-	double distanceBetweenPoints(double& lastLongitude, double& lastLatitude, double longitude, double latitude);
-	double* getEdges();
-	void tracksExtract(vector<Track>&tracks,double* edges,double prec);
-	void tracksMDL(vector<Track> &tracks);
-	vector<Segment>tracks2Segment(vector<Track>&tracks);
-	double** disMatrice(vector<Segment>);
-	void processByTarget(vector <Track>);
+	static double* targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
+	static void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
+	static void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);
+	static double distanceBetweenPoints(double& lastLongitude, double& lastLatitude, double longitude, double latitude);
+	static double* getEdges();
+	static void tracksExtract(vector<Track>&tracks,double* edges,double prec);
+	static void tracksMDL(vector<Track> &tracks);
+	static vector<Segment>tracks2Segment(vector<Track>&tracks);
+	static double** disMatrice(vector<Segment>);
+	static void processByTarget(vector <Track>);
+	static void clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo);
 };
 

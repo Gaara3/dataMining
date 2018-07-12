@@ -17,7 +17,7 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 	this->radius = radius;        //设置半径
 	this->minPTs = minPTs;        //设置领域最小数据个数
 	//this->dimNum = DIME_NUM;    //设置数据维度
-	this->distMat = distMat;
+	//this->distMat = distMat;
 	this->dataNum = size;
 
 	for (int counter = 0; counter < dataNum; counter++) {	//DataSets 初始化，置idx为counter,clusterID为-1，visited为false
@@ -26,7 +26,7 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 
 	for (int i = 0; i<dataNum; i++)
 	{
-		SetArrivalPoints(dataSets[i],i);            //计算数据点领域内对象
+		SetArrivalPoints(dataSets[i],i,distMat);            //计算数据点领域内对象
 	}
 	return true;    //返回
 }
@@ -37,12 +37,12 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 说明：设置数据点的领域点列表
 参数：
 返回值： true;    */
-void DBSCAN::SetArrivalPoints(DataPoint& dp,int idx)
+void DBSCAN::SetArrivalPoints(DataPoint& dp,int idx,double** distMat)
 {
 	for (int i = 0; i<dataNum; i++)                //对每个数据点执行
 	{
 		//double distance = GetDistance(dataSets[i], dp);    //获取与特定点之间的距离
-		if (this->distMat[idx][i] <= radius && i != dp.GetDpId())        //若距离小于半径，并且特定点的id与dp的id不同执行
+		if (distMat[idx][i] <= radius && i != dp.GetDpId())        //若距离小于半径，并且特定点的id与dp的id不同执行
 			dp.GetArrivalPoints().push_back(i);            //将特定点id压入dp的领域列表中
 	}
 	/*if (dp.GetArrivalPoints().size() >= minPTs)            //若dp领域内数据点数据量> minPTs执行
@@ -82,12 +82,20 @@ int DBSCAN::DoDBSCANRecursive()
 
 vector<int>* DBSCAN::clusterGenerate()
 {
-	int clusterNum = this->DoDBSCANRecursive();
+	this->clusterNum = this->DoDBSCANRecursive();
 	vector<int>* clusterInfo = new vector<int>[clusterNum];
 	for (int counter = 0; counter < dataNum; counter++) {
 		int curCluster = dataSets[counter].GetClusterId();
 		if (curCluster != -1)
 			clusterInfo[curCluster].push_back(counter);
+	}
+
+	for (int counter = 0; counter < clusterNum; counter++) {
+		printf("cluster %d:", counter);
+		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
+			printf("%d\t", *i);
+		}
+		printf("\n");
 	}
 	return clusterInfo;
 }

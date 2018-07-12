@@ -206,9 +206,11 @@ void Track::segGenerate(vector<Segment> &segs) {
 	int pointAmount = this->mdlPointIndex.size();
 	int segAmount = pointAmount - 1;
 	for (int counter = 0; counter < segAmount; counter++) {
-		TrackPoint start = historyPoint[    this->mdlPointIndex[counter]     ];
-		TrackPoint end = historyPoint[     this->mdlPointIndex[counter + 1]];
-		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE } });
+		int startIdx = this->mdlPointIndex[counter];
+		int endIdx = this->mdlPointIndex[counter + 1];
+		TrackPoint start = historyPoint[startIdx];
+		TrackPoint end = historyPoint[endIdx ];
+		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE },this->TRACKID-1,startIdx ,this->TRACKID-1,endIdx });
 	}
 }
 
