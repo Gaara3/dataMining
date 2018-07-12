@@ -121,7 +121,7 @@ int Track::NnPointOfGrid(int index1, int index2) {//先算出网格平均坐标�
 	return resIndex;
 }
 
-void Track::extractNnPoint(double* edges, double prec) {
+void Track::extractNnPoint(vector<double> edges, double prec) {
 	Grid curGrid = { true,-1,-1,0,-1 };
 	for (int counter = 0; counter < this->POINTAMOUNT; counter++) {//TODO  考虑最后一个点！
 		int tmpGridX = historyPoint[counter].getGridX(edges, prec), tmpGridY = historyPoint[counter].getGridY(edges, prec);
@@ -147,7 +147,7 @@ void Track::extractNnPoint(double* edges, double prec) {
 
 void Track::MDLExtract() {
 	int star_index = 1, length = 1, count = 1,curr_index = 0;
-	int len = this->featurePointIndex.size();
+	int len = (int)this->featurePointIndex.size();
 	mdlPointIndex.push_back(featurePointIndex[0]);
 	if (len > 1) {
 		while (star_index + length < len) {
@@ -203,12 +203,14 @@ double Track::lth(int star_index, int cur_index) {
 }
 
 void Track::segGenerate(vector<Segment> &segs) {
-	int pointAmount = this->mdlPointIndex.size();
+	int pointAmount = (int)this->mdlPointIndex.size();
 	int segAmount = pointAmount - 1;
 	for (int counter = 0; counter < segAmount; counter++) {
-		TrackPoint start = historyPoint[    this->mdlPointIndex[counter]     ];
-		TrackPoint end = historyPoint[     this->mdlPointIndex[counter + 1]];
-		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE } });
+		int startIdx = this->mdlPointIndex[counter];
+		int endIdx = this->mdlPointIndex[counter + 1];
+		TrackPoint start = historyPoint[startIdx];
+		TrackPoint end = historyPoint[endIdx ];
+		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE },this->TRACKID-1,startIdx ,this->TRACKID-1,endIdx });
 	}
 }
 

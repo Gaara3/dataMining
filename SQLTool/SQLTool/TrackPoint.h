@@ -2,8 +2,10 @@
 #include <string>
 #include <time.h>
 #include "Grid.h"
+#include <vector>
 
 using std::string;
+using std::vector;
 
 class TrackPoint
 {
@@ -28,9 +30,7 @@ class TrackPoint
 		double CONFIDENCELEVEL;
 		char* OPERATOR;
 		char* RESERVE1;
-		char* RESERVE2;
-
-		
+		char* RESERVE2;		
 
 		static int intervalThreshold;
 
@@ -48,7 +48,7 @@ class TrackPoint
 		void setGridX(int X);
 		void setGridY(int Y);
 
-		bool inTheGrid(Grid grid,double* edges,double prec);
+		bool inTheGrid(Grid grid,vector<double> edges,double prec);
 		
 		//jUST FOR TEST
 		//HistoryTrackDetail(string TRACKID, int ORDERNUMBER, string TARGETID, int TIME, string SOURCE,
@@ -56,7 +56,8 @@ class TrackPoint
 		//	double LOWERRIGHTALTITUDE, double CENTERLONGITUDE, double CENTERLATITUDE, double CENTERALTITUDE,*/double CONFIDENCELEVEL,
 		//	string OPERATOR, string RESERVE1, string RESERVE2);
 
-		void setOderNumber(int orderNumber);
+		void setOrderNumber(int orderNumber);
+		int getOrderNumber();
 		void setTrackID(int trackID);
 		bool headOfTrack(int lastPosixTime);
 		static char* datetimeConvertor(int input);
@@ -64,7 +65,7 @@ class TrackPoint
 		char* getTargetID();
 		char* getSource();
 		char* getOperator();
-		int getGridY(double* edges, double prec);
-		int getGridX(double* edges, double prec);
+		int getGridY(vector<double> edges, double prec);
+		int getGridX(vector<double> edges, double prec);
 };
 
