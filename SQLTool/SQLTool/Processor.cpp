@@ -208,8 +208,25 @@ void Processor::processByTarget(vector<Track> historyTracks)
 	}
 }
 
-void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo)
+/*
+1.计算平均向量
+2.簇旋转
+3.延x轴扫描，寻找多段的平均点，形成频繁轨迹的旋转后坐标
+4.逆向旋转，得出频繁轨迹真实坐标
+5.根据簇内点信息，生成频繁项真实信息
+*/
+void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,int clusterNum)
 {
-
+	//clusters分解
+	vector<vector<Segment>>	clusters;
+	for (int counter = 0; counter < clusterNum; counter++) {//对每个簇进行初始化赋值
+		vector<Segment> clusterDetail;
+		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
+			//根据每个簇的信息指针，对指针内容进行遍历，push对应seg信息
+			int tmpidx = *i;
+			clusterDetail.push_back(segs[tmpidx]);
+		}
+		clusters.push_back(clusterDetail);
+	}
 }
 

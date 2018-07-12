@@ -31,6 +31,6 @@ public:
 	static vector<Segment>tracks2Segment(vector<Track>&tracks,vector<Segment> &result);
 	static double** disMatrice(vector<Segment>);
 	static void processByTarget(vector <Track>);
-	static void clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo);
+	static void clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,int clusterNum);
 };
 

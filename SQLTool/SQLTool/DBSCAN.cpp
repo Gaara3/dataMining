@@ -97,7 +97,7 @@ vector<int>* DBSCAN::clusterGenerate()
 		}
 		printf("\n");
 	}
-	return clusterInfo;
+		return clusterInfo;
 }
 
 /*

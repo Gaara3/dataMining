@@ -50,16 +50,10 @@ void targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector
 			else	//轨迹所属目标变化，则跳出，分析当前目标的情况
 				break;								
 		}
-		DBSCAN targetDBSCANNER =analyzeTargetTracks(targetTracks,edges[counter],prec, targetSegs);
-		vector<int>* clusterInfo = targetDBSCANNER.clusterGenerate();
-
-		for (int counter = 0; counter < targetDBSCANNER.clusterNum; counter++) {
-			printf("cluster %d:", counter);
-			for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
-				printf("%d\t", *i);
-			}
-			printf("\n");
-		}
+		DBSCAN targetDBSCANNER =analyzeTargetTracks(targetTracks,edges[counter],prec, targetSegs);//根据目标数据生成对应的DBSCANER
+		vector<int>* clusterInfo = targetDBSCANNER.clusterGenerate();//启动DBSCANER
+		int clusterNum = targetDBSCANNER.clusterNum;
+		Processor::clusterAnalyze(targetSegs, clusterInfo,clusterNum);
 		printf("---------------------------------------\n");
 	}
 }
