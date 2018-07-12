@@ -12,7 +12,7 @@ char* fileName;    //文件名
 double radius;    //半径
 int minPTs;        //领域最小数据个数
 返回值： true;    */
-bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)	
+ DBSCAN::DBSCAN(double** distMat, int size,double radius, int minPTs)	
 {
 	this->radius = radius;        //设置半径
 	this->minPTs = minPTs;        //设置领域最小数据个数
@@ -28,7 +28,7 @@ bool DBSCAN::Init(double** distMat, int size,double radius, int minPTs)
 	{
 		SetArrivalPoints(dataSets[i],i,distMat);            //计算数据点领域内对象
 	}
-	return true;    //返回
+	//return true;    //返回
 }
 
 
@@ -88,14 +88,6 @@ vector<int>* DBSCAN::clusterGenerate()
 		int curCluster = dataSets[counter].GetClusterId();
 		if (curCluster != -1)
 			clusterInfo[curCluster].push_back(counter);
-	}
-
-	for (int counter = 0; counter < clusterNum; counter++) {
-		printf("cluster %d:", counter);
-		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
-			printf("%d\t", *i);
-		}
-		printf("\n");
 	}
 	return clusterInfo;
 }

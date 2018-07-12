@@ -3,6 +3,7 @@
 #include "Track.h"
 #include "EpsiSolver.h"
 #include "DBSCAN.h"
+#include "Cluster.h"
 #include <winsock.h>
 class Main
 {

@@ -18,17 +18,40 @@ MYSQL_ROW Processor::column;
 /*
 	对入参列表的所有target进行预处理
 */
-double* Processor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
-	int targetsNum = targets.size();
+vector<vector<double>> Processor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
+	int targetsNum = (int)targets.size();
 	bool newTarget = true;
 	int trackID = 0;
-	double* edges = getEdges();//直接利用mysql找出经纬极值
-	printf("%lf  %lf   %lf  %lf\n", edges[0], edges[1], edges[2], edges[3]);
+	vector<vector<double>> edges;
+	//double edges[4] = getEdges();//直接利用mysql找出经纬极值
+	//printf("%lf  %lf   %lf  %lf\n", edges[0], edges[1], edges[2], edges[3]);
 	for (int counter = 0; counter < targetsNum; counter++) {
 		//printf("********************************new Target********************************\n");
+		edges.push_back( Processor::getTargetEdges(targets[counter]));
 		oneTargetPreProcession(targets[counter], HistoryTracks, newTarget,trackID);
 		newTarget = true;
 	}
+	for (vector<vector<double>>::iterator i = edges.begin(); i != edges.end(); i++) {
+		printf("%10g,%10g,%10g,%10g\n", (*i)[0], (*i)[1], (*i)[2], (*i)[3]);
+	}
+	return edges;
+}
+
+vector<double> Processor::getTargetEdges(char * targetID)
+{
+	vector<double> edges;
+	char maxLongSql[150];
+	char minLongSql[150];
+	char maxLatSql[150];
+	char minLatSql[150];
+	sprintf(maxLongSql, "SELECT max(LONGITUDE)from m_preprocessing where targetID = '%s';", targetID);
+	sprintf(minLongSql, "SELECT min(LONGITUDE)from m_preprocessing where targetID = '%s';", targetID);
+	sprintf(maxLatSql, "SELECT max(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
+	sprintf(minLatSql, "SELECT min(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
+	edges.push_back(atof(sqlTool.getVariableFromDB(maxLongSql)));
+	edges.push_back(atof(sqlTool.getVariableFromDB(minLongSql)));
+	edges.push_back(atof(sqlTool.getVariableFromDB(maxLatSql)));
+	edges.push_back(atof(sqlTool.getVariableFromDB(minLatSql)));
 	return edges;
 }
 
@@ -108,37 +131,37 @@ double Processor::distanceBetweenPoints(double &lastLongitude, double &lastLatit
 	return res;
 }
 
-
-double* Processor::getEdges() {
-	double edges[4];
-	edges[0] = atof(sqlTool.getVariableFromDB("SELECT max(LONGITUDE)from m_preprocessing;"));
-	edges[1] = atof(sqlTool.getVariableFromDB("SELECT min(LONGITUDE)from m_preprocessing;"));
-	edges[2] = atof(sqlTool.getVariableFromDB("SELECT max(LATITUDE)from m_preprocessing;"));
-	edges[3] = atof(sqlTool.getVariableFromDB("SELECT min(LATITUDE)from m_preprocessing;"));
-	return edges;
-}
-
-
+//
+//double* Processor::getEdges() {
+//	double edges[4];
+//	edges[0] = atof(sqlTool.getVariableFromDB("SELECT max(LONGITUDE)from m_preprocessing;"));
+//	edges[1] = atof(sqlTool.getVariableFromDB("SELECT min(LONGITUDE)from m_preprocessing;"));
+//	edges[2] = atof(sqlTool.getVariableFromDB("SELECT max(LATITUDE)from m_preprocessing;"));
+//	edges[3] = atof(sqlTool.getVariableFromDB("SELECT min(LATITUDE)from m_preprocessing;"));
+//	return edges;
+//}
 
 
-void Processor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
-	int trackNum = tracks.size();
+
+
+void Processor::tracksExtract(vector<Track> &tracks,vector<double> edges,double prec){
+	int trackNum = (int)tracks.size();
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].extractNnPoint(edges,prec);
 	}
 }
 
 void Processor::tracksMDL(vector<Track> &tracks) {
-	int trackNum = tracks.size();
+	int trackNum = (int)tracks.size();
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].MDLExtract();
 	}
 }
 
-vector<Segment> Processor::tracks2Segment(vector<Track>& tracks)
+vector<Segment> Processor::tracks2Segment(vector<Track>& tracks, vector<Segment> &result)
 {
-	int trackNum = tracks.size();
-	vector<Segment> result;
+	int trackNum = (int)tracks.size();
+	
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].segGenerate(result);
 	}
@@ -147,7 +170,7 @@ vector<Segment> Processor::tracks2Segment(vector<Track>& tracks)
 
 double** Processor::disMatrice(vector<Segment>segs)
 {
-	int size = segs.size();
+	int size = (int)segs.size();
 	double **disMat = new double*[size];
 	bool** matFlag = new bool*[size];
 	double weights[3] = { 0.5,1,2 };
@@ -176,7 +199,7 @@ double** Processor::disMatrice(vector<Segment>segs)
 
 void Processor::processByTarget(vector<Track> historyTracks)
 {
-	int trackNum = historyTracks.size();
+	int trackNum = (int)historyTracks.size();
 	char* curTar = historyTracks[0].getTargetID();
 	for (int counter = 0; counter < trackNum; counter++) {
 		if (strcmp(curTar, historyTracks[counter].getTargetID()) == 0) {

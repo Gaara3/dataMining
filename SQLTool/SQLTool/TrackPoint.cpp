@@ -171,15 +171,15 @@ char* TrackPoint::datetimeConvertor(int input) {
 }
 
 
-int TrackPoint::getGridX(double* edges,double prec) {
+int TrackPoint::getGridX(vector<double> edges,double prec) {
 	return floor((this->CENTERLONGITUDE- edges[1]) / prec);
 }
 
-int TrackPoint::getGridY(double* edges, double prec) {
+int TrackPoint::getGridY(vector<double> edges, double prec) {
 	return floor((this->CENTERLATITUDE - edges[3]) / prec);
 }
 
 
-bool TrackPoint::inTheGrid(Grid grid,double * edges,double prec) {
+bool TrackPoint::inTheGrid(Grid grid,vector<double> edges,double prec) {
 	return this->getGridX(edges,prec) == grid.gridX  &&  this->getGridY(edges, prec) == grid.gridY;
 }
