@@ -14,13 +14,15 @@ void targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector
 DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double>,double prec, vector<Segment> &segments);
 							
 
+double prec = 0.1;
+int minPts = 2;
 int main() {
 	//Processor Processor;
 	Processor::sqlTool.connectDB();
 	Processor::sqlTool.operationExcutor(Track::getTargetsQuery, Processor::res);
 	vector<char*> targets;
 	vector<Track> HistoryTracks;	
-	double prec = 0.1;
+	
 
 	while (Processor::column = mysql_fetch_row(Processor::res)) {
 		targets.push_back(Processor::column[0]);
@@ -70,7 +72,7 @@ DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double> edge,double
 	epsiSolver.solve();
 	double epsi = epsiSolver.getRes();
 	printf("DBSCAN epsi:%10g\n", epsi);
-	return DBSCAN(disMat, segments.size(), epsi, 2);	//使用DBSCAN进行子段聚类
+	return DBSCAN(disMat, segments.size(), epsi, minPts);	//使用DBSCAN进行子段聚类
 /*	vector<int>* clusterInfo = dbscaner.clusterGenerate();
 
 	for (int counter = 0; counter < dbscaner.clusterNum; counter++) {

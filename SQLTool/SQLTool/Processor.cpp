@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Processor.h"
 #include "SqlTool.h"
+#include <algorithm>    // std::sort
 #include "MiningTools.h"
 
 Processor::Processor()
@@ -15,6 +16,8 @@ Processor::~Processor()
 SqlTool Processor::sqlTool ;
 MYSQL_RES* Processor::res;
 MYSQL_ROW Processor::column;
+
+extern int minPts;
 /*
 	对入参列表的所有target进行预处理
 */
@@ -112,13 +115,14 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	point.setOrderNumber(++orderNumber);
 	details.push_back(point);
 
-	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离，并更新last坐标
-	
+	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离
+	lastLatitude = latitude;
+	lastLongitude = longitude;
 	//sqlTool.insertExcutor(point.insertSQL().data());	
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
-double Processor::distanceBetweenPoints(double &lastLongitude, double &lastLatitude, double longitude, double latitude) {
+double Processor::distanceBetweenPoints(double lastLongitude, double lastLatitude, double longitude, double latitude) {
 	double res = 0;
 	if (lastLatitude <= 90 && lastLongitude <= 180) {	//当一段轨迹完结，设置异常值以便于新一段计算
 		double p = 0.017453292519943295;    // Math.PI / 180
@@ -126,8 +130,6 @@ double Processor::distanceBetweenPoints(double &lastLongitude, double &lastLatit
 
 		res= 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
 	}
-	lastLatitude = latitude;
-	lastLongitude = longitude;
 	return res;
 }
 
@@ -221,12 +223,115 @@ void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,in
 	vector<vector<Segment>>	clusters;
 	for (int counter = 0; counter < clusterNum; counter++) {//对每个簇进行初始化赋值
 		vector<Segment> clusterDetail;
-		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != clusterInfo[counter].end(); i++) {
+		vector<int>::iterator end = clusterInfo[counter].end();
+		for (vector<int>::iterator i = clusterInfo[counter].begin(); i != end; i++) {
 			//根据每个簇的信息指针，对指针内容进行遍历，push对应seg信息
 			int tmpidx = *i;
 			clusterDetail.push_back(segs[tmpidx]);
 		}
 		clusters.push_back(clusterDetail);
+	}	
+	for (vector<Segment>c :clusters) {	//对每个簇进行轮循操作
+		Vector2D clusterV = Processor::clusterVector(c);
+		double angle = acos(clusterV.x / vectorMag(clusterV));    //使用x轴单位向量(1,0)算出簇所需的逆时针旋转角
+		angle *= (clusterV.y < 0 ? 1 : -1);//传入所需逆时针旋转的角度,根据y值正负决定角度正负
+		Processor::clusterRotation(c,angle);
+		vector<Point> freqPointInCluster = Processor::clusterScan(c);	//得出簇内的频繁点相对坐标
+		for (Point p : freqPointInCluster)
+			p.rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标
+		
+		//构建真实轨迹信息(trackID ORDERNUMBER TIME POSIXTIME)
+		//构建真实轨迹点信息()
 	}
 }
 
+/*
+1.计算平均向量
+2.簇旋转
+3.延x轴扫描，寻找多段的平均点，形成频繁轨迹的旋转后坐标
+4.逆向旋转，得出频繁轨迹真实坐标
+5.根据簇内点信息，生成频繁项真实信息
+*/
+Vector2D Processor::clusterVector(vector<Segment>clusterSegs)
+{
+	double totalStartX = 0, totalStartY = 0, totalEndX = 0, totalEndY = 0;
+	vector<Segment>::iterator end = clusterSegs.end();
+	for (vector<Segment>::iterator i = clusterSegs.begin(); i !=end; i++) {
+		totalStartX += (*i).start.x;
+		totalStartY += (*i).start.y;
+		totalEndX += (*i).end.x;
+		totalEndY += (*i).end.y;
+	}
+	int clusterSize = (double)clusterSegs.size();
+	totalStartX /= clusterSize;
+	totalEndX /= clusterSize;
+	totalStartY /= clusterSize;
+	totalEndY /= clusterSize;
+	return Vector2D(Point{ totalStartX, totalStartY }, Point{ totalEndX, totalEndY });
+}
+
+/*
+将簇内线段逆时针旋转
+*/
+void Processor::clusterRotation(vector<Segment>&segs, double angle)
+{
+	for (vector<Segment>::iterator i = segs.begin(); i != segs.end(); i++) {
+		Processor::segmentRotation(*i, angle);
+	}
+}
+
+void Processor::segmentRotation(Segment &seg, double angle) {
+	/*seg.start.x = cos(angle)*seg.start.x - sin(angle)*seg.start.y;
+	seg.start.y = sin(angle)*seg.start.y + cos(angle)*seg.start.y;
+	seg.end.x = cos(angle)*seg.end.x - sin(angle)*seg.end.y;
+	seg.end.y = sin(angle)*seg.end.y + cos(angle)*seg.end.y;*/
+	seg.start.rotateAnticlockwise(angle);
+	seg.end.rotateAnticlockwise(angle);
+}
+
+/*
+传入的是旋转过后的簇，扫描线就是x轴垂线
+*/
+vector<Point> Processor::clusterScan(vector<Segment>segs)
+{
+	//对各段起终点x值排序
+	//对各x值检验与簇的相交情况
+	//交点大于min阈值，则计算均值点
+	vector<double> segX;
+	vector<Point> frequentPoint;
+	for (vector<Segment>::iterator i = segs.begin(); i != segs.end(); i++) {
+		segX.push_back((*i).start.x);
+		segX.push_back((*i).end.x);
+	}
+	std::sort(segX.begin(), segX.end());	
+	segX.erase(unique(segX.begin(), segX.end()), segX.end());	//去除重复的x坐标
+	for (vector<double>::iterator i = segX.begin(); i != segX.end(); i++) {	//对簇内的每个起、终点进行判定
+		int intersectCounter = 0;
+		for (Segment s : segs) {
+			if (s.start.x <= *i  && s.end.x >= *i)
+				++intersectCounter;
+		}
+		if (intersectCounter < minPts)	//交点个数小于阈值，则跳过该点
+			continue;
+		else {	//交点个数大于阈值，需要求出平均坐标
+			double avgy = avgYofCluster(segs, *i);
+			Point avgPoint = Point{ *i, avgy };		//得出旋转后的轨迹点
+			frequentPoint.push_back(avgPoint);
+		}
+	}
+}
+
+double Processor::avgYofCluster(vector<Segment>segs,double x)
+{
+	int totalY = 0, intersectNum = 0;
+	for (Segment s : segs) {
+		if (s.start.x <= x && s.end.x >= x) {	
+			++intersectNum;
+			Vector2D s2e = Vector2D(s.start, s.end);
+			double alph=(s.end.x - x) / vectorMag(s2e);
+			totalY += (s.start.y + alph * s2e.y);
+		}			
+	}
+	totalY /=intersectNum;
+	return totalY;
+}

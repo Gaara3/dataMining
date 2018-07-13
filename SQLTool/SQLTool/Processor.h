@@ -8,6 +8,8 @@
 #include "SqlTool.h"
 #include "Grid.h"
 #include "Segment.h"
+#include "Vector2D.h"
+#include "Point.h"
 
 
 using std::vector;
@@ -24,7 +26,7 @@ public:
 	static vector<double> getTargetEdges(char* targetID);
 	static void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
 	static void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);
-	static double distanceBetweenPoints(double& lastLongitude, double& lastLatitude, double longitude, double latitude);
+	static double distanceBetweenPoints(double lastLongitude, double lastLatitude, double longitude, double latitude);
 	//static double* getEdges();
 	static void tracksExtract(vector<Track>&tracks,vector<double> edges,double prec);
 	static void tracksMDL(vector<Track> &tracks);
@@ -32,5 +34,10 @@ public:
 	static double** disMatrice(vector<Segment>);
 	static void processByTarget(vector <Track>);
 	static void clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,int clusterNum);
+	static Vector2D clusterVector(vector<Segment>);
+	static void clusterRotation(vector<Segment> &, double angle);
+	static void segmentRotation(Segment &, double angle);
+	static vector<Point> clusterScan(vector<Segment>);
+	static double avgYofCluster(vector<Segment>,double);
 };
 

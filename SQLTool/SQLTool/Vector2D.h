@@ -9,7 +9,7 @@ public:
 	Vector2D() {}
 	// 复制构造函数
 	Vector2D(const Vector2D &a) : x(a.x), y(a.y) {}
-	// 带三个参数的构造函数,三个值完成初始化
+	// 带参数的构造函数,值完成初始化
 	Vector2D(double nx, double ny) : x(nx), y(ny) {}
 	//传入两点构造向量
 	Vector2D(Point a,Point b):x(b.x-a.x),y(b.y-a.y){}
