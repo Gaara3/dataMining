@@ -26,8 +26,7 @@ vector<vector<double>> Processor::targetsPreProcession(vector<char*> targets, ve
 	bool newTarget = true;
 	int trackID = 0;
 	vector<vector<double>> edges;
-	//double edges[4] = getEdges();//直接利用mysql找出经纬极值
-	//printf("%lf  %lf   %lf  %lf\n", edges[0], edges[1], edges[2], edges[3]);
+
 	for (int counter = 0; counter < targetsNum; counter++) {
 		//printf("********************************new Target********************************\n");
 		edges.push_back( Processor::getTargetEdges(targets[counter]));
@@ -68,20 +67,18 @@ void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks
 	int orderNumber = 0;
 	double totalLength = 0;
 	double lastLongitude = 181, lastLatitude = 91;
-	//Grid grid = { true,-1,-1,0,0 };  //newGrid,gridX,gridY,startIndex,endIndex
 	sqlTool.operationExcutor(Track::getTargetRecords(target), res);
 	mysql_autocommit(&sqlTool.mysql, 0);
 	MYSQL_RES *targetRecord = res;
 	vector<TrackPoint> details;
-	//int *featurePoint = new int[];//特征点指针
-	//vector<int>featurePoint;
+
 	while (column = mysql_fetch_row(targetRecord)) {		
 		pointPreprocession(details,column, HistoryTracks,trackID, lastPosixtime,orderNumber, newTarget,totalLength,lastLongitude,lastLatitude);
 		newTarget = false;//TODO   改进
 	}
 	//单目标最后一段轨迹需要专门处理一次
 	HistoryTracks.back().trackEndProcession(lastPosixtime, orderNumber, details,totalLength);
-	//sqlTool.insertExcutor(HistoryTracks.back().insertSQL().data());
+	sqlTool.insertExcutor(HistoryTracks.back().insertSQL().data());
 	mysql_commit(&sqlTool.mysql);
 }
 
@@ -89,7 +86,8 @@ void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks
 void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, vector<Track>&HistoryTracks,int &trackID, int &lastPosixTime,int &orderNumber,bool &newTarget,double &totalLength,double &lastLongitude,double& lastLatitude) {
 	
 	double longitude = atof(column[3]), latitude = atof(column[4]), altitude = atof(column[5]);
-	TrackPoint point = TrackPoint(column[0], column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8]);
+	double speed = atof(column[10]), angle = atof(column[11]);
+	TrackPoint point = TrackPoint(column[0], column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8], speed,angle);
 	
 	if (point.headOfTrack(lastPosixTime)) {//该点是一段新轨迹
 		//printf("===============================new track============================\n");
@@ -97,7 +95,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 		if (!newTarget) {//newTarget 已涵盖队列为空的情况，不再另行判断
 			Track *lastTrack = &HistoryTracks.back();
 			lastTrack->trackEndProcession(lastPosixTime, orderNumber, details,totalLength);
-			//sqlTool.insertExcutor(lastTrack->insertSQL().data());	//为了不传类别无关变量res，暂不加入封装
+			sqlTool.insertExcutor(lastTrack->insertSQL().data());	//为了不传类别无关变量res，暂不加入封装
 			mysql_commit(&sqlTool.mysql);
 			//引用值重置，考虑封装
 			lastPosixTime = 0;			
@@ -118,7 +116,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离
 	lastLatitude = latitude;
 	lastLongitude = longitude;
-	//sqlTool.insertExcutor(point.insertSQL().data());	
+	sqlTool.insertExcutor(point.insertSQL().data());	
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
@@ -239,9 +237,10 @@ void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,in
 		vector<Point> freqPointInCluster = Processor::clusterScan(c);	//得出簇内的频繁点相对坐标
 		for (Point p : freqPointInCluster)
 			p.rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标
-		
-		//构建真实轨迹信息(trackID ORDERNUMBER TIME POSIXTIME)
-		//构建真实轨迹点信息()
+			
+		//构建真实轨迹信息(trackID POINTAMOUNT TARGETID STARTTIME ENDTIME LENGTH SOURCE TASKINFO CONFIDENCELEVEL OPERATOR RESERVE1 RESERVE2)
+		//构建真实轨迹点信息(trackID ORDERNUMBER TIME POSIXTIME SOURCE 经纬 置信度 AVGSPEED RESERVE1 RESERVE2)
+
 	}
 }
 
@@ -276,7 +275,7 @@ Vector2D Processor::clusterVector(vector<Segment>clusterSegs)
 void Processor::clusterRotation(vector<Segment>&segs, double angle)
 {
 	for (vector<Segment>::iterator i = segs.begin(); i != segs.end(); i++) {
-		Processor::segmentRotation(*i, angle);
+		MiningTools::segmentRotation(*i, angle);
 	}
 }
 
@@ -319,6 +318,7 @@ vector<Point> Processor::clusterScan(vector<Segment>segs)
 			frequentPoint.push_back(avgPoint);
 		}
 	}
+	return frequentPoint;
 }
 
 double Processor::avgYofCluster(vector<Segment>segs,double x)

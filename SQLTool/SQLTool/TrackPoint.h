@@ -27,6 +27,8 @@ class TrackPoint
 		double LOWERRIGHTLONGITUDE;
 		double LOWERRIGHTLATITUDE;
 		double LOWERRIGHTALTITUDE;
+		double speed;
+		double angle;
 		double CONFIDENCELEVEL;
 		char* OPERATOR;
 		char* RESERVE1;
@@ -44,7 +46,8 @@ class TrackPoint
 		string insertSQL();
 		TrackPoint();
 		~TrackPoint();
-		TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2);
+		TrackPoint(int orderNumber, double Longitude, double Latitude);
+		TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2,double speed,double angle);
 		void setGridX(int X);
 		void setGridY(int Y);
 
@@ -65,6 +68,10 @@ class TrackPoint
 		char* getTargetID();
 		char* getSource();
 		char* getOperator();
+		double getSpeed();
+		double getAngle();
+		void setAngle(double);
+		void setSpeed(double);
 		int getGridY(vector<double> edges, double prec);
 		int getGridX(vector<double> edges, double prec);
 };

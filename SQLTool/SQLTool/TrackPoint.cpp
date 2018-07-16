@@ -13,7 +13,7 @@ TrackPoint::TrackPoint()
 {
 }
 
-TrackPoint::TrackPoint(char* TARGETID,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE, double ALTITUDE,char* OPERATOR, char* RESERVE1,char* RESERVE2 ) {
+TrackPoint::TrackPoint(char* TARGETID,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE, double ALTITUDE,char* OPERATOR, char* RESERVE1,char* RESERVE2,double speed,double angle ) {
 	this->TARGETID = TARGETID;
 	this->TIME = atoi(POSIXTIME);
 	this->SOURCE = SOURCE;
@@ -41,6 +41,8 @@ TrackPoint::TrackPoint(char* TARGETID,char* POSIXTIME,char* SOURCE,double LONGIT
 	this->OPERATOR = OPERATOR;
 	this->RESERVE1 = RESERVE1;
 	this->RESERVE2 = RESERVE2;
+	this->speed = speed;
+	this->angle = angle;
 }
 
 void TrackPoint::setGridX(int X)
@@ -86,16 +88,23 @@ TrackPoint::~TrackPoint()
 {
 }
 
+TrackPoint::TrackPoint(int orderNumber, double Longitude, double Latitude):ORDERNUMBER(orderNumber),CENTERLONGITUDE(Longitude),CENTERLATITUDE(Latitude)
+{
+}
+
 string TrackPoint::insertSQL() {
-	string insertSql = "insert into m_historytrack_sub(GUID,TRACKID,ORDERNUMBER,TIME,SOURCE,UPPERLEFTLONGITUDE,\
-UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,CENTERLONGITUDE,CENTERLATITUDE,\
-CENTERALTITUDE,CONFIDENCELEVEL,RESERVE1,RESERVE2) values(";
-	insertSql.append("UUID(),").append(to_string(this->TRACKID)).append(",").append(to_string(this->ORDERNUMBER)).append(",'")
+	string insertSql = "insert into m_historytrack_sub(GUID,TRACKID,ORDERNUMBER,POSIXTIME,TIME,SOURCE,UPPERLEFTLONGITUDE,\
+UPPERLEFTLATITUDE,UPPERLEFTALTITUDE, UPPERRIGHTLONGITUDE,UPPERRIGHTLATITUDE,UPPERRIGHTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,\
+LOWERLEFTLONGITUDE,LOWERLEFTLATITUDE,LOWERLEFTALTITUDE,CENTERLONGITUDE,CENTERLATITUDE,\
+CENTERALTITUDE,SPEED,ANGLE,CONFIDENCELEVEL,RESERVE1,RESERVE2) values(";
+	insertSql.append("UUID(),").append(to_string(this->TRACKID)).append(",").append(to_string(this->ORDERNUMBER)).append(",").append(to_string(this->TIME)).append(",'")
 		.append(SqlTool::datetimeConvertor(this->TIME)).append("','").append(this->SOURCE).append("',")
+		.append(to_string(this->UPPERLEFTLONGITUDE)).append(",").append(to_string(this->UPPERLEFTLATITUDE)).append(",").append(to_string(this->UPPERLEFTALTITUDE)).append(",")
+		.append(to_string(this->UPPERLEFTLONGITUDE)).append(",").append(to_string(this->UPPERLEFTLATITUDE)).append(",").append(to_string(this->UPPERLEFTALTITUDE)).append(",")
 		.append(to_string(this->UPPERLEFTLONGITUDE)).append(",").append(to_string(this->UPPERLEFTLATITUDE)).append(",").append(to_string(this->UPPERLEFTALTITUDE)).append(",")
 		.append(to_string(this->LOWERRIGHTLONGITUDE)).append(",").append(to_string(this->LOWERRIGHTLATITUDE)).append(",").append(to_string(this->LOWERRIGHTALTITUDE)).append(",")
 		.append(to_string(this->CENTERLONGITUDE)).append(",").append(to_string(this->CENTERLATITUDE)).append(",").append(to_string(this->CENTERALTITUDE)).append(",")
-		.append("1,'").append(this->RESERVE1).append("','").append(this->RESERVE2).append("');");
+		.append(to_string(this->speed)).append(",").append(to_string(this->angle)).append(",").append("1,'").append(this->RESERVE1).append("','").append(this->RESERVE2).append("');");
 
 	//char* res = new char[900];
 	//char* dateTimestr = datetimeConvertor(this->TIME);
@@ -132,12 +141,25 @@ char* TrackPoint::getTargetID() {
 	return this->TARGETID;
 }
 
+void Track::setTargetID(char* targetid) {
+	this->TARGETID = targetid;
+}
 char* TrackPoint::getSource() {
 	return this->SOURCE;
 }
 
 char* TrackPoint::getOperator() {
 	return this->OPERATOR;
+}
+
+double TrackPoint::getSpeed()
+{
+	return this->speed;
+}
+
+void TrackPoint::setSpeed(double speed)
+{
+	this->speed = speed;
 }
 
 

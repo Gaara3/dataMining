@@ -11,12 +11,50 @@ using std::to_string;
 
 const char* Track::getTargetsQuery = "SELECT distinct TARGETID FROM m_preprocessing;";
 
+//extern vector<Track> HistoryTracks;
+
 char* Track::getTargetRecords(char* targetID) {
 	char* res = new char[800];
-	sprintf(res, "SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM m_preprocessing WHERE TARGETID = '%s' ORDER BY POSIXTIME; ", targetID);
+	sprintf(res, "SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO,SPEED,ANGLE FROM m_preprocessing WHERE TARGETID = '%s' ORDER BY POSIXTIME; ", targetID);
 	return res;
 	//return string("SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '").append(targetID).append("'ORDER BY POSIXTIME; ");
 	}
+
+/*Track Track::frequentTrackGenerate(vector<Segment> clusterSegs, vector<Point> freqPoints)
+{
+	//构建真实轨迹信息(trackID)
+	//构建真实轨迹点信息(trackID)
+	int freqPointNum = freqPoints.size();
+	Track track;
+	int startTime = MAXINT;
+	int endTime = 0;
+	double avgspeed = 0;
+	double length = 0;
+	for (Segment s : clusterSegs) {
+		int tmpStartTime = HistoryTracks[s.startT].STARTTIME;
+		int tmpEndTime = HistoryTracks[s.endT].ENDTIME;
+		if (tmpStartTime < startTime)
+			startTime = tmpStartTime;
+		if (tmpEndTime > endTime)
+			endTime = tmpEndTime;
+		avgspeed += HistoryTracks[s.endT].historyPoint[s.endIdx].getSpeed();
+	}
+	avgspeed /= (clusterSegs.size());
+	//TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2);
+	for (int counter = 0; counter < freqPointNum;++counter) {
+		TrackPoint p = TrackPoint(counter, freqPoints[counter].x, freqPoints[counter].y);
+		p.setSpeed(avgspeed);
+		if (counter > 0)
+			length += MiningTools::distanceBetweenPoints(freqPoints[counter].x, freqPoints[counter].y, freqPoints[counter + 1].x, freqPoints[counter + 1].y);
+		track.historyPoint.push_back(p);
+	}//各轨迹点初始化
+	track.setTargetID(HistoryTracks[clusterSegs[0].endT].getTargetID());
+	track.setLength(length);
+	track.setStartTime(startTime);
+	track.setEndTime(endTime);
+	track.setPointAmount(freqPointNum);
+	return track;
+} */ 
 
 Track::Track()
 {
@@ -52,6 +90,11 @@ void Track::setEndTime(int endTime) {
 
 void Track::setPointAmount(int pointAmount) {
 	this->POINTAMOUNT = pointAmount;
+}
+
+void Track::setStartTime(int startTime)
+{
+	this->STARTTIME = startTime;
 }
 
 void Track::setTrackID(int trackID) {

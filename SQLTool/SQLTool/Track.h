@@ -43,11 +43,15 @@ public:
 	~Track();
 	const static char* getTargetsQuery;
 	static char* getTargetRecords(char* targetID);
+	static Track frequentTrackGenerate(vector<Segment>clusterSegs, vector<Point> freqPoints);
+	static int getMinTrackID();
 
 	void setPointAmount(int pointAmount);
+	void setStartTime(int startTime);
 	void setEndTime(int endTime);
 	void setTrackID(int trackID);
 	void setLength(double length);
+	void setTargetID(char* id);
 	char* getTargetID();
 	string insertSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);

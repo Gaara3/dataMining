@@ -61,3 +61,23 @@ Point MiningTools::projectionOfPoint(Segment sg, Point p)
 	Vector2D pro = s + (se * alph);
 	return Point{ pro.x, pro.y };
 }
+
+double MiningTools::distanceBetweenPoints(double lastLongitude, double lastLatitude, double longitude, double latitude) {
+	double res = 0;
+	if (lastLatitude <= 90 && lastLongitude <= 180) {	//当一段轨迹完结，设置异常值以便于新一段计算
+		double p = 0.017453292519943295;    // Math.PI / 180
+		double a = 0.5 - cos((latitude - lastLatitude) * p) / 2 + cos(latitude * p) * cos(lastLatitude * p) *(0.5 - cos((longitude - lastLongitude) * p) / 2);
+
+		res = 12742 * asin(sqrt(a)); // 2 * R; R = 6371 km
+	}
+	return res;
+}
+
+void MiningTools::segmentRotation(Segment &seg, double angle) {
+	/*seg.start.x = cos(angle)*seg.start.x - sin(angle)*seg.start.y;
+	seg.start.y = sin(angle)*seg.start.y + cos(angle)*seg.start.y;
+	seg.end.x = cos(angle)*seg.end.x - sin(angle)*seg.end.y;
+	seg.end.y = sin(angle)*seg.end.y + cos(angle)*seg.end.y;*/
+	seg.start.rotateAnticlockwise(angle);
+	seg.end.rotateAnticlockwise(angle);
+}
