@@ -10,7 +10,7 @@ Main::Main()
 Main::~Main()
 {
 }
-void targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec);
+vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec);
 DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double>,double prec, vector<Segment> &segments);
 							
 
@@ -30,18 +30,21 @@ int main() {
 
 	vector<vector<double>> edges = Processor::targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
 
-//	targetsFreqTracks(targets,HistoryTracks,edges,prec);//根据轨迹片段，进行:网格化、特征点提取、生成线段距离矩阵、DBSCAN、聚类结果解析
+	vector<vector<Track>> allFreqTracks = targetsFreqTracks(targets,HistoryTracks,edges,prec);//根据轨迹片段，进行:网格化、特征点提取、生成线段距离矩阵、DBSCAN、聚类结果解析
+
 	mysql_free_result(Processor::res);
 	system("pause");
 	return 0;
 }
 
-void targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec)
+vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec)
 {
 	int targetNum = (int)targets.size();
 	int trackNum = (int)historyTracks.size();
 	int trackCounter = 0;
 	//对每一个目标，选出其轨迹段。以目标为单位进行分析
+	vector<vector<Track>> FreqTracks;
+	int trackID = 0;
 	for (int counter = 0; counter < targetNum; counter++) {
 		vector<Track> targetTracks ;
 		vector<Segment>targetSegs;
@@ -55,9 +58,11 @@ void targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector
 		DBSCAN targetDBSCANNER =analyzeTargetTracks(targetTracks,edges[counter],prec, targetSegs);//根据目标数据生成对应的DBSCANER
 		vector<int>* clusterInfo = targetDBSCANNER.clusterGenerate();//启动DBSCANER
 		int clusterNum = targetDBSCANNER.clusterNum;
-		Processor::clusterAnalyze(targetSegs, clusterInfo,clusterNum);
+		vector<Track> targetFreqTracks = Processor::clusterAnalyze(targetTracks,targetSegs, clusterInfo,clusterNum,trackID);
+		FreqTracks.push_back(targetFreqTracks);
 		printf("---------------------------------------\n");
 	}
+	return FreqTracks;
 }
 
 DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double> edge,double prec, vector<Segment> &segments) {
@@ -84,3 +89,5 @@ DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double> edge,double
 	}
 */
 }
+
+

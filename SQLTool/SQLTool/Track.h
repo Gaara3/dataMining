@@ -16,9 +16,9 @@ private:
 	int TRACKID;
 	int POINTAMOUNT;
 	char* TARGETID;
-	char* TARGETMODELNUMBER;
+	/*char* TARGETMODELNUMBER;
 	char* TARGETNAME;
-	char* TARGETTYPE;
+	char* TARGETTYPE;*/
 	int STARTTIME;
 	int ENDTIME;
 	double CONFIDENCELEVEL;
@@ -46,12 +46,15 @@ public:
 	static Track frequentTrackGenerate(vector<Segment>clusterSegs, vector<Point> freqPoints);
 	static int getMinTrackID();
 
+	int getEndTime();
+	int getStartTime();
 	void setPointAmount(int pointAmount);
 	void setStartTime(int startTime);
 	void setEndTime(int endTime);
 	void setTrackID(int trackID);
 	void setLength(double length);
 	void setTargetID(char* id);
+	void setTrackIDofPoint(int trackID);
 	char* getTargetID();
 	string insertSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
@@ -61,7 +64,7 @@ public:
 	double MDL_par(int starIdx, int curIdx);
 	double lth(int star_index, int cur_index);
 	double MDL_nopar(int starIdx, int endIdx);
-	void segGenerate(vector<Segment> &segs);
+	void segGenerate(vector<Segment> &segs,int counter);
 
 };
 

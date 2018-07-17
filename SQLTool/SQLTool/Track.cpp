@@ -20,41 +20,6 @@ char* Track::getTargetRecords(char* targetID) {
 	//return string("SELECT TARGETID,POSIXTIME,SOURCE,LONGITUDE,LATITUDE,ALTITUDE,OPERATOR,RESERVE1,RESERVE2,TASKINFO FROM preprocessing_copy WHERE TARGETID = '").append(targetID).append("'ORDER BY POSIXTIME; ");
 	}
 
-/*Track Track::frequentTrackGenerate(vector<Segment> clusterSegs, vector<Point> freqPoints)
-{
-	//构建真实轨迹信息(trackID)
-	//构建真实轨迹点信息(trackID)
-	int freqPointNum = freqPoints.size();
-	Track track;
-	int startTime = MAXINT;
-	int endTime = 0;
-	double avgspeed = 0;
-	double length = 0;
-	for (Segment s : clusterSegs) {
-		int tmpStartTime = HistoryTracks[s.startT].STARTTIME;
-		int tmpEndTime = HistoryTracks[s.endT].ENDTIME;
-		if (tmpStartTime < startTime)
-			startTime = tmpStartTime;
-		if (tmpEndTime > endTime)
-			endTime = tmpEndTime;
-		avgspeed += HistoryTracks[s.endT].historyPoint[s.endIdx].getSpeed();
-	}
-	avgspeed /= (clusterSegs.size());
-	//TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2);
-	for (int counter = 0; counter < freqPointNum;++counter) {
-		TrackPoint p = TrackPoint(counter, freqPoints[counter].x, freqPoints[counter].y);
-		p.setSpeed(avgspeed);
-		if (counter > 0)
-			length += MiningTools::distanceBetweenPoints(freqPoints[counter].x, freqPoints[counter].y, freqPoints[counter + 1].x, freqPoints[counter + 1].y);
-		track.historyPoint.push_back(p);
-	}//各轨迹点初始化
-	track.setTargetID(HistoryTracks[clusterSegs[0].endT].getTargetID());
-	track.setLength(length);
-	track.setStartTime(startTime);
-	track.setEndTime(endTime);
-	track.setPointAmount(freqPointNum);
-	return track;
-} */ 
 
 Track::Track()
 {
@@ -88,6 +53,16 @@ void Track::setEndTime(int endTime) {
 	this->ENDTIME = endTime;
 }
 
+int Track::getEndTime()
+{
+	return this->ENDTIME;
+}
+
+int Track::getStartTime()
+{
+	return this->STARTTIME;
+}
+
 void Track::setPointAmount(int pointAmount) {
 	this->POINTAMOUNT = pointAmount;
 }
@@ -101,8 +76,18 @@ void Track::setTrackID(int trackID) {
 	this->TRACKID = trackID;
 }
 
+void Track::setTrackIDofPoint(int trackID) {
+	for (TrackPoint p : this->historyPoint) {
+		p.setTrackID(trackID);
+	}
+}
 void Track::setLength(double length){
 	this->length = length;
+}
+
+void Track::setTargetID(char * id)
+{
+	this->TARGETID = id;
 }
 
 char * Track::getTargetID()
@@ -245,7 +230,7 @@ double Track::lth(int star_index, int cur_index) {
 	return res;
 }
 
-void Track::segGenerate(vector<Segment> &segs) {
+void Track::segGenerate(vector<Segment> &segs,int trackIdx) {
 	int pointAmount = (int)this->mdlPointIndex.size();
 	int segAmount = pointAmount - 1;
 	for (int counter = 0; counter < segAmount; counter++) {
@@ -253,7 +238,7 @@ void Track::segGenerate(vector<Segment> &segs) {
 		int endIdx = this->mdlPointIndex[counter + 1];
 		TrackPoint start = historyPoint[startIdx];
 		TrackPoint end = historyPoint[endIdx ];
-		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE },this->TRACKID-1,startIdx ,this->TRACKID-1,endIdx });
+		segs.push_back({ Point{start.CENTERLONGITUDE,start.CENTERLATITUDE },Point{end.CENTERLONGITUDE,end.CENTERLATITUDE },trackIdx,startIdx ,trackIdx,endIdx });
 	}
 }
 

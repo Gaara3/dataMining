@@ -17,7 +17,7 @@ SqlTool::~SqlTool()
 
 bool SqlTool::connectDB() {//TODO   封装传入参数
 	mysql_init(&this->mysql);
-	if (!mysql_real_connect(&mysql, "localhost", "root", "123456", "bigdata", 3306, NULL, 0)) {
+	if (!mysql_real_connect(&mysql, "localhost", "root", "123456", "new_bigdata", 3306, NULL, 0)) {
 		printf("Something wrong when connecting to the Database:%s\n", mysql_error(&mysql));
 		return false;
 	}

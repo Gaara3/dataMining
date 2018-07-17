@@ -87,7 +87,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	
 	double longitude = atof(column[3]), latitude = atof(column[4]), altitude = atof(column[5]);
 	double speed = atof(column[10]), angle = atof(column[11]);
-	TrackPoint point = TrackPoint(column[0], column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8], speed,angle);
+	TrackPoint point = TrackPoint(/*column[0],*/ column[1], column[2], longitude, latitude, altitude, column[6], column[7], column[8], speed,angle);
 	
 	if (point.headOfTrack(lastPosixTime)) {//该点是一段新轨迹
 		//printf("===============================new track============================\n");
@@ -103,7 +103,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 			totalLength = 0; lastLatitude = 91; lastLongitude = 181;	//新轨迹开始，设置异常值以便于判断
 			details.clear();	
 		}
-		HistoryTracks.push_back(Track(trackID,point.getTargetID(), point.getSource(),column[9], point.getOperator(), point.getTime()));	//轨迹数组加入新track
+		HistoryTracks.push_back(Track(trackID, column[0], point.getSource(),column[9], point.getOperator(), point.getTime()));	//轨迹数组加入新track
 		//details.clear();
 	}
 	
@@ -163,7 +163,7 @@ vector<Segment> Processor::tracks2Segment(vector<Track>& tracks, vector<Segment>
 	int trackNum = (int)tracks.size();
 	
 	for (int counter = 0; counter < trackNum; counter++) {
-		tracks[counter].segGenerate(result);
+		tracks[counter].segGenerate(result,counter);
 	}
 	return result;
 }
@@ -215,10 +215,11 @@ void Processor::processByTarget(vector<Track> historyTracks)
 4.逆向旋转，得出频繁轨迹真实坐标
 5.根据簇内点信息，生成频繁项真实信息
 */
-void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,int clusterNum)
+vector<Track> Processor::clusterAnalyze(vector<Track> targetTracks,vector<Segment> segs, vector<int>* clusterInfo,int clusterNum,int &trackID)
 {
 	//clusters分解
 	vector<vector<Segment>>	clusters;
+	vector<Track> freqTracks;
 	for (int counter = 0; counter < clusterNum; counter++) {//对每个簇进行初始化赋值
 		vector<Segment> clusterDetail;
 		vector<int>::iterator end = clusterInfo[counter].end();
@@ -235,13 +236,16 @@ void Processor::clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,in
 		angle *= (clusterV.y < 0 ? 1 : -1);//传入所需逆时针旋转的角度,根据y值正负决定角度正负
 		Processor::clusterRotation(c,angle);
 		vector<Point> freqPointInCluster = Processor::clusterScan(c);	//得出簇内的频繁点相对坐标
-		for (Point p : freqPointInCluster)
-			p.rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标
-			
+		for (vector<Point>::iterator p = freqPointInCluster.begin();p!= freqPointInCluster.end();p++)
+			(*p).rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标			
 		//构建真实轨迹信息(trackID POINTAMOUNT TARGETID STARTTIME ENDTIME LENGTH SOURCE TASKINFO CONFIDENCELEVEL OPERATOR RESERVE1 RESERVE2)
 		//构建真实轨迹点信息(trackID ORDERNUMBER TIME POSIXTIME SOURCE 经纬 置信度 AVGSPEED RESERVE1 RESERVE2)
-
+		Track freqTrack = Processor::frequentTrackGenerate(targetTracks, c, freqPointInCluster);
+		freqTrack.setTrackID(trackID);
+		freqTrack.setTrackIDofPoint(trackID++);
+		freqTracks.push_back(freqTrack);
 	}
+	return freqTracks;
 }
 
 /*
@@ -334,4 +338,41 @@ double Processor::avgYofCluster(vector<Segment>segs,double x)
 	}
 	totalY /=intersectNum;
 	return totalY;
+}
+
+Track Processor::frequentTrackGenerate(vector<Track> targetTracks, vector<Segment> clusterSegs, vector<Point> freqPoints)
+{
+	//构建真实轨迹信息(trackID)
+	//构建真实轨迹点信息(trackID)
+	int freqPointNum = freqPoints.size();
+	Track track;
+	int startTime = MAXINT;
+	int endTime = 0;
+	double avgspeed = 0;
+	double length = 0;
+	for (Segment s : clusterSegs) {
+		int tmpStartTime = targetTracks[s.startT].getStartTime();
+		int tmpEndTime = targetTracks[s.endT].getEndTime();
+		if (tmpStartTime < startTime)
+			startTime = tmpStartTime;
+		if (tmpEndTime > endTime)
+			endTime = tmpEndTime;
+		avgspeed += targetTracks[s.endT].historyPoint[s.endIdx].getSpeed();
+	}
+	avgspeed /= (clusterSegs.size());
+	//TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2);
+	for (int counter = 0; counter < freqPointNum; ++counter) {
+		TrackPoint p = TrackPoint(counter, freqPoints[counter].x, freqPoints[counter].y);
+		p.setSpeed(avgspeed);
+		
+		if (counter <freqPointNum-1)
+			length += (MiningTools::distanceBetweenPoints(freqPoints[counter].x, freqPoints[counter].y, freqPoints[counter + 1].x, freqPoints[counter + 1].y));
+		track.historyPoint.push_back(p);
+	}//各轨迹点初始化
+	track.setTargetID(targetTracks[clusterSegs[0].endT].getTargetID());
+	track.setLength(length);
+	track.setStartTime(startTime);
+	track.setEndTime(endTime);
+	track.setPointAmount(freqPointNum);
+	return track;
 }

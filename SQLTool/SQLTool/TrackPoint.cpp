@@ -13,8 +13,8 @@ TrackPoint::TrackPoint()
 {
 }
 
-TrackPoint::TrackPoint(char* TARGETID,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE, double ALTITUDE,char* OPERATOR, char* RESERVE1,char* RESERVE2,double speed,double angle ) {
-	this->TARGETID = TARGETID;
+TrackPoint::TrackPoint(/*char* TARGETID,*/char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE, double ALTITUDE,char* OPERATOR, char* RESERVE1,char* RESERVE2,double speed,double angle ) {
+	//this->TARGETID = TARGETID;
 	this->TIME = atoi(POSIXTIME);
 	this->SOURCE = SOURCE;
 	this->ORDERNUMBER = 1;
@@ -88,8 +88,20 @@ TrackPoint::~TrackPoint()
 {
 }
 
-TrackPoint::TrackPoint(int orderNumber, double Longitude, double Latitude):ORDERNUMBER(orderNumber),CENTERLONGITUDE(Longitude),CENTERLATITUDE(Latitude)
+TrackPoint::TrackPoint(int orderNumber, double Longitude, double Latitude):ORDERNUMBER(orderNumber)
 {
+	this->CENTERLONGITUDE = Longitude;
+	this->UPPERLEFTLONGITUDE = Longitude;
+	this->UPPERRIGHTLONGITUDE = Longitude;
+	this->LOWERLEFTLONGITUDE = Longitude;
+	this->LOWERRIGHTLONGITUDE = Longitude;
+
+
+	this->CENTERLATITUDE = Latitude;
+	this->UPPERLEFTLATITUDE = Latitude;
+	this->UPPERRIGHTLATITUDE = Latitude;
+	this->LOWERLEFTLATITUDE = Latitude;
+	this->LOWERRIGHTLATITUDE = Latitude;
 }
 
 string TrackPoint::insertSQL() {
@@ -137,13 +149,13 @@ int TrackPoint::getTime() {
 	return this->TIME;
 }
 
-char* TrackPoint::getTargetID() {
-	return this->TARGETID;
-}
+//char* TrackPoint::getTargetID() {
+//	return this->TARGETID;
+//}
 
-void Track::setTargetID(char* targetid) {
-	this->TARGETID = targetid;
-}
+//void Track::setTargetID(char* targetid) {
+//	this->TARGETID = targetid;
+//}
 char* TrackPoint::getSource() {
 	return this->SOURCE;
 }

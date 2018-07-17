@@ -33,11 +33,12 @@ public:
 	static vector<Segment>tracks2Segment(vector<Track>&tracks,vector<Segment> &result);
 	static double** disMatrice(vector<Segment>);
 	static void processByTarget(vector <Track>);
-	static void clusterAnalyze(vector<Segment> segs, vector<int>* clusterInfo,int clusterNum);
+	static vector<Track> clusterAnalyze(vector<Track>,vector<Segment> segs, vector<int>* clusterInfo,int clusterNum,int &trackID);
 	static Vector2D clusterVector(vector<Segment>);
 	static void clusterRotation(vector<Segment> &, double angle);
 	static void segmentRotation(Segment &, double angle);
 	static vector<Point> clusterScan(vector<Segment>);
 	static double avgYofCluster(vector<Segment>,double);
+	static Track frequentTrackGenerate(vector<Track> HistoryTracks, vector<Segment> clusterSegs, vector<Point> freqPoints);
 };
 

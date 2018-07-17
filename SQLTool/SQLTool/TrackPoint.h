@@ -12,7 +12,7 @@ class TrackPoint
 	private:
 		int TRACKID;
 		int ORDERNUMBER;
-		char* TARGETID;
+		//char* TARGETID;
 		int TIME;
 		char* SOURCE;
 		double UPPERLEFTLONGITUDE;
@@ -47,7 +47,7 @@ class TrackPoint
 		TrackPoint();
 		~TrackPoint();
 		TrackPoint(int orderNumber, double Longitude, double Latitude);
-		TrackPoint(char* TARGET,char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2,double speed,double angle);
+		TrackPoint(/*char* TARGET,*/char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2,double speed,double angle);
 		void setGridX(int X);
 		void setGridY(int Y);
 
@@ -65,7 +65,7 @@ class TrackPoint
 		bool headOfTrack(int lastPosixTime);
 		static char* datetimeConvertor(int input);
 		int getTime();
-		char* getTargetID();
+		//char* getTargetID();
 		char* getSource();
 		char* getOperator();
 		double getSpeed();
