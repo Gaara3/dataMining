@@ -10,8 +10,8 @@ Main::Main()
 Main::~Main()
 {
 }
-vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec);
-DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double>,double prec, vector<Segment> &segments);
+vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<double*>edges,double prec);
+DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,double*,double prec, vector<Segment> &segments);
 void insertFreqRes(vector<vector<Track>>);
 
 double prec = 0.1;
@@ -28,7 +28,7 @@ int main() {
 		targets.push_back(Processor::column[0]);
 	}
 
-	vector<vector<double>> edges = Processor::targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
+	vector<double*> edges = Processor::targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
 
 	vector<vector<Track>> allFreqTracks = targetsFreqTracks(targets,HistoryTracks,edges,prec);//根据轨迹片段，进行:网格化、特征点提取、生成线段距离矩阵、DBSCAN、聚类结果解析
 
@@ -39,7 +39,10 @@ int main() {
 	return 0;
 }
 
-vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<vector<double>>edges,double prec)
+/*
+假如需要单独调用，需要先获取目标列表、各目标边界、各目标在select条件下的分段
+*/
+vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<double*>edges,double prec)
 {
 	int targetNum = (int)targets.size();
 	int trackNum = (int)historyTracks.size();
@@ -67,7 +70,7 @@ vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> his
 	return FreqTracks;
 }
 
-DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,vector<double> edge,double prec, vector<Segment> &segments) {
+DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,double* edge,double prec, vector<Segment> &segments) {
 
 	Processor::tracksExtract(targetTracks, edge, prec);	//轨迹网格化处理
 	Processor::tracksMDL(targetTracks);	//轨迹提取特征点

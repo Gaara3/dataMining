@@ -135,7 +135,7 @@ UPPERLEFTLONGITUDE, UPPERLEFTLATITUDE, UPPERLEFTALTITUDE, LOWERRIGHTLONGITUDE, L
 char * TrackPoint::insertFreqSQL()
 {
 	char res[1000];
-	sprintf_s(res, 1000, "insert into m_frequentlytrack_sub(GUID,TRACKID,ORDERNUMBER,CENTERLONGITUDE,CENTERLATITUDE,CENTERALTITUDE,UPPERLEFTLONGITUDE,UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,\
+	sprintf_s(res, 1000, "insert into m_selectedfrequentlytrack_sub(GUID,TRACKID,ORDERNUMBER,CENTERLONGITUDE,CENTERLATITUDE,CENTERALTITUDE,UPPERLEFTLONGITUDE,UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,\
 	UPPERRIGHTLONGITUDE,UPPERRIGHTLATITUDE,UPPERRIGHTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,LOWERLEFTLONGITUDE,LOWERLEFTLATITUDE,LOWERLEFTALTITUDE,\
 CONFIDENCELEVEL,AVGSPEED) VALUES(UUID(),%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,1,%lf);", TRACKID, ORDERNUMBER, CENTERLONGITUDE, CENTERLATITUDE, CENTERALTITUDE, UPPERLEFTLONGITUDE, UPPERLEFTLATITUDE, UPPERLEFTALTITUDE,
 UPPERRIGHTLONGITUDE, UPPERRIGHTLATITUDE, UPPERRIGHTALTITUDE, LOWERRIGHTLONGITUDE, LOWERRIGHTLATITUDE, LOWERRIGHTALTITUDE, LOWERLEFTLONGITUDE, LOWERLEFTLATITUDE, LOWERLEFTALTITUDE,speed);
@@ -199,21 +199,6 @@ void TrackPoint::setSpeed(double speed)
 bool TrackPoint::headOfTrack(int lastPosixTime) {
 	return this->TIME - lastPosixTime > intervalThreshold;
 }
-//int main() {
-//	/*HistoryTrackPoint hisD = HistoryTrackPoint("trackID", 101, "targetID", "2018-05-03 12:00:00", "sensor", 180, 0, 26, 1, "Gaara", "test", "test2");
-//	string res = hisD.insertSQL();
-//	const char* reschar = res.c_str();
-//	printf(reschar);
-//	system("pause");*/
-//
-//	HistoryTrack hisT = HistoryTrack(const_cast<char*>("targetId"), const_cast<char*>("source"), const_cast<char*>("taskInfo"), const_cast<char*>("Gaara"), const_cast<char*>("1341234235"));
-//
-//	printf(hisT.insertSQL().c_str());
-//
-//	system("pause");
-//	return 0;
-//}
-
 
 char* TrackPoint::datetimeConvertor(int input) {
 	time_t t = input;
@@ -224,15 +209,15 @@ char* TrackPoint::datetimeConvertor(int input) {
 }
 
 
-int TrackPoint::getGridX(vector<double> edges,double prec) {
+int TrackPoint::getGridX(double*  edges,double prec) {
 	return floor((this->CENTERLONGITUDE- edges[1]) / prec);
 }
 
-int TrackPoint::getGridY(vector<double> edges, double prec) {
+int TrackPoint::getGridY(double* edges, double prec) {
 	return floor((this->CENTERLATITUDE - edges[3]) / prec);
 }
 
 
-bool TrackPoint::inTheGrid(Grid grid,vector<double> edges,double prec) {
+bool TrackPoint::inTheGrid(Grid grid,double* edges,double prec) {
 	return this->getGridX(edges,prec) == grid.gridX  &&  this->getGridY(edges, prec) == grid.gridY;
 }

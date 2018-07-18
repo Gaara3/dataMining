@@ -21,11 +21,11 @@ extern int minPts;
 /*
 	对入参列表的所有target进行预处理
 */
-vector<vector<double>> Processor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
+vector<double*> Processor::targetsPreProcession(vector<char*> targets, vector<Track> &HistoryTracks) {
 	int targetsNum = (int)targets.size();
 	bool newTarget = true;
 	int trackID = 0;
-	vector<vector<double>> edges;
+	vector<double*> edges;
 
 	for (int counter = 0; counter < targetsNum; counter++) {
 		//printf("********************************new Target********************************\n");
@@ -33,15 +33,15 @@ vector<vector<double>> Processor::targetsPreProcession(vector<char*> targets, ve
 		oneTargetPreProcession(targets[counter], HistoryTracks, newTarget,trackID);
 		newTarget = true;
 	}
-	for (vector<vector<double>>::iterator i = edges.begin(); i != edges.end(); i++) {
+	for (vector<double*>::iterator i = edges.begin(); i != edges.end(); i++) {
 		printf("%10g,%10g,%10g,%10g\n", (*i)[0], (*i)[1], (*i)[2], (*i)[3]);
 	}
 	return edges;
 }
 
-vector<double> Processor::getTargetEdges(char * targetID)
+double* Processor::getTargetEdges(char * targetID)
 {
-	vector<double> edges;
+	double* edges = new double[4];
 	char maxLongSql[150];
 	char minLongSql[150];
 	char maxLatSql[150];
@@ -50,10 +50,10 @@ vector<double> Processor::getTargetEdges(char * targetID)
 	sprintf(minLongSql, "SELECT min(LONGITUDE)from m_preprocessing where targetID = '%s';", targetID);
 	sprintf(maxLatSql, "SELECT max(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
 	sprintf(minLatSql, "SELECT min(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
-	edges.push_back(atof(sqlTool.getVariableFromDB(maxLongSql)));
-	edges.push_back(atof(sqlTool.getVariableFromDB(minLongSql)));
-	edges.push_back(atof(sqlTool.getVariableFromDB(maxLatSql)));
-	edges.push_back(atof(sqlTool.getVariableFromDB(minLatSql)));
+	edges[0] = atof(sqlTool.getVariableFromDB(maxLongSql));
+	edges[1] = atof(sqlTool.getVariableFromDB(minLongSql));
+	edges[2] = atof(sqlTool.getVariableFromDB(maxLatSql));
+	edges[3] = atof(sqlTool.getVariableFromDB(minLatSql));
 	return edges;
 }
 
@@ -131,7 +131,7 @@ double Processor::distanceBetweenPoints(double lastLongitude, double lastLatitud
 	return res;
 }
 
-void Processor::tracksExtract(vector<Track> &tracks,vector<double> edges,double prec){
+void Processor::tracksExtract(vector<Track> &tracks,double* edges,double prec){
 	int trackNum = (int)tracks.size();
 	for (int counter = 0; counter < trackNum; counter++) {
 		tracks[counter].extractNnPoint(edges,prec);

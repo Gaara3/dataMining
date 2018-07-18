@@ -43,8 +43,8 @@ public:
 	~Track();
 	const static char* getTargetsQuery;
 	static char* getTargetRecords(char* targetID);
-	static Track frequentTrackGenerate(vector<Segment>clusterSegs, vector<Point> freqPoints);
-	static int getMinTrackID();
+	//static Track frequentTrackGenerate(vector<Segment>clusterSegs, vector<Point> freqPoints);
+	//static int getMinTrackID();
 
 	int getEndTime();
 	int getStartTime();
@@ -59,7 +59,7 @@ public:
 	string insertHisSQL();
 	char* insertFreqSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
-	void extractNnPoint(vector<double> edges,double prec);
+	void extractNnPoint(double* edges,double prec);
 	int NnPointOfGrid(int index1, int index2);
 	void MDLExtract();
 	double MDL_par(int starIdx, int curIdx);

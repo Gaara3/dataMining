@@ -115,7 +115,7 @@ string Track::insertHisSQL() {
 char * Track::insertFreqSQL()
 {
 	char res[1000];
-	sprintf(res, "insert into m_frequentlytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,LENGTH,CONFIDENCELEVEL,OPERATOR) VALUES\
+	sprintf(res, "insert into m_selectedfrequentlytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,LENGTH,CONFIDENCELEVEL,OPERATOR) VALUES\
 (UUID(),%d,%d,%s,'%s','%s',%lf,1,'%s')", TRACKID, POINTAMOUNT,TARGETID, SqlTool::datetimeConvertor(this->STARTTIME), SqlTool::datetimeConvertor(this->ENDTIME),length,OPERATOR);
 	return res;
 }
@@ -157,7 +157,7 @@ int Track::NnPointOfGrid(int index1, int index2) {//先算出网格平均坐标�
 	return resIndex;
 }
 
-void Track::extractNnPoint(vector<double> edges, double prec) {
+void Track::extractNnPoint(double* edges, double prec) {
 	Grid curGrid = { true,-1,-1,0,-1 };
 	for (int counter = 0; counter < this->POINTAMOUNT; counter++) {//TODO  考虑最后一个点！
 		int tmpGridX = historyPoint[counter].getGridX(edges, prec), tmpGridY = historyPoint[counter].getGridY(edges, prec);

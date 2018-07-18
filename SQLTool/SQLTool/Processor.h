@@ -22,13 +22,13 @@ public:
 	static MYSQL_ROW column;
 	Processor();
 	~Processor();
-	static vector<vector<double>> targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
-	static vector<double> getTargetEdges(char* targetID);
+	static vector<double*> targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);
+	static double* getTargetEdges(char* targetID);
 	static void oneTargetPreProcession(char* target, vector<Track> &HistoryTracks,bool &sameTrack,int &trackID);
 	static void pointPreprocession(vector<TrackPoint> &details, MYSQL_ROW column, vector<Track>&HistoryTracks,/*HistoryTrack *&curTrack,*/int &trackID,int &lastPosixTime,int &orderNumber,bool &newTrack,double &totalLength,double &lastLongitude,double &lastLatitude);
 	static double distanceBetweenPoints(double lastLongitude, double lastLatitude, double longitude, double latitude);
 	//static double* getEdges();
-	static void tracksExtract(vector<Track>&tracks,vector<double> edges,double prec);
+	static void tracksExtract(vector<Track>&tracks,double* edges,double prec);
 	static void tracksMDL(vector<Track> &tracks);
 	static vector<Segment>tracks2Segment(vector<Track>&tracks,vector<Segment> &result);
 	static double** disMatrice(vector<Segment>);
