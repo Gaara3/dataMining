@@ -56,7 +56,8 @@ public:
 	void setTargetID(char* id);
 	void setTrackIDofPoint(int trackID);
 	char* getTargetID();
-	string insertSQL();
+	string insertHisSQL();
+	char* insertFreqSQL();
 	void trackEndProcession(int endTime,int pointAmount,vector<TrackPoint>details,double totalLength);
 	void extractNnPoint(vector<double> edges,double prec);
 	int NnPointOfGrid(int index1, int index2);

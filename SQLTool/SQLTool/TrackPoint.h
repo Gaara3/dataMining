@@ -43,7 +43,8 @@ class TrackPoint
 		double CENTERLONGITUDE;//考虑到计算效率，经纬海拔放到public部分以便直接访问
 		double CENTERLATITUDE;
 		double CENTERALTITUDE;
-		string insertSQL();
+		string insertHisSQL();
+		char* insertFreqSQL();
 		TrackPoint();
 		~TrackPoint();
 		TrackPoint(int orderNumber, double Longitude, double Latitude);

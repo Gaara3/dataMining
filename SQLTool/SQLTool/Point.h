@@ -6,7 +6,8 @@ typedef struct myPoint {
 
 	void rotateAnticlockwise(double angle) {
 		double cosA = cos(angle), sinA = sin(angle);
+		double tmpX = x;
 		x = cosA *x - sinA *y;
-		y = sinA *x + cosA*y;
+		y = sinA * tmpX + cosA*y;
 	}
 }Point;

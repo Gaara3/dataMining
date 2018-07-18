@@ -78,7 +78,7 @@ void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks
 	}
 	//单目标最后一段轨迹需要专门处理一次
 	HistoryTracks.back().trackEndProcession(lastPosixtime, orderNumber, details,totalLength);
-	sqlTool.insertExcutor(HistoryTracks.back().insertSQL().data());
+	sqlTool.insertExcutor(HistoryTracks.back().insertHisSQL().data());
 	mysql_commit(&sqlTool.mysql);
 }
 
@@ -95,7 +95,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 		if (!newTarget) {//newTarget 已涵盖队列为空的情况，不再另行判断
 			Track *lastTrack = &HistoryTracks.back();
 			lastTrack->trackEndProcession(lastPosixTime, orderNumber, details,totalLength);
-			sqlTool.insertExcutor(lastTrack->insertSQL().data());	//为了不传类别无关变量res，暂不加入封装
+			sqlTool.insertExcutor(lastTrack->insertHisSQL().data());	//为了不传类别无关变量res，暂不加入封装
 			mysql_commit(&sqlTool.mysql);
 			//引用值重置，考虑封装
 			lastPosixTime = 0;			
@@ -116,7 +116,7 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离
 	lastLatitude = latitude;
 	lastLongitude = longitude;
-	sqlTool.insertExcutor(point.insertSQL().data());	
+	sqlTool.insertExcutor(point.insertHisSQL().data());	
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
@@ -130,19 +130,6 @@ double Processor::distanceBetweenPoints(double lastLongitude, double lastLatitud
 	}
 	return res;
 }
-
-//
-//double* Processor::getEdges() {
-//	double edges[4];
-//	edges[0] = atof(sqlTool.getVariableFromDB("SELECT max(LONGITUDE)from m_preprocessing;"));
-//	edges[1] = atof(sqlTool.getVariableFromDB("SELECT min(LONGITUDE)from m_preprocessing;"));
-//	edges[2] = atof(sqlTool.getVariableFromDB("SELECT max(LATITUDE)from m_preprocessing;"));
-//	edges[3] = atof(sqlTool.getVariableFromDB("SELECT min(LATITUDE)from m_preprocessing;"));
-//	return edges;
-//}
-
-
-
 
 void Processor::tracksExtract(vector<Track> &tracks,vector<double> edges,double prec){
 	int trackNum = (int)tracks.size();
@@ -232,17 +219,20 @@ vector<Track> Processor::clusterAnalyze(vector<Track> targetTracks,vector<Segmen
 	}	
 	for (vector<Segment>c :clusters) {	//对每个簇进行轮循操作
 		Vector2D clusterV = Processor::clusterVector(c);
-		double angle = acos(clusterV.x / vectorMag(clusterV));    //使用x轴单位向量(1,0)算出簇所需的逆时针旋转角
+		double cosA = clusterV.x / vectorMag(clusterV);
+		double angle = acos(cosA);    //使用x轴单位向量(1,0)算出簇所需的逆时针旋转角
 		angle *= (clusterV.y < 0 ? 1 : -1);//传入所需逆时针旋转的角度,根据y值正负决定角度正负
 		Processor::clusterRotation(c,angle);
 		vector<Point> freqPointInCluster = Processor::clusterScan(c);	//得出簇内的频繁点相对坐标
 		for (vector<Point>::iterator p = freqPointInCluster.begin();p!= freqPointInCluster.end();p++)
-			(*p).rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标			
+			(*p).rotateAnticlockwise(-angle);	//将得出的频繁点坐标转回真实坐标
+
 		//构建真实轨迹信息(trackID POINTAMOUNT TARGETID STARTTIME ENDTIME LENGTH SOURCE TASKINFO CONFIDENCELEVEL OPERATOR RESERVE1 RESERVE2)
 		//构建真实轨迹点信息(trackID ORDERNUMBER TIME POSIXTIME SOURCE 经纬 置信度 AVGSPEED RESERVE1 RESERVE2)
 		Track freqTrack = Processor::frequentTrackGenerate(targetTracks, c, freqPointInCluster);
 		freqTrack.setTrackID(trackID);
-		freqTrack.setTrackIDofPoint(trackID++);
+		freqTrack.setTrackIDofPoint(trackID);
+		trackID++;
 		freqTracks.push_back(freqTrack);
 	}
 	return freqTracks;

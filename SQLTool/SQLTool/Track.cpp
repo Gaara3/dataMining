@@ -77,8 +77,8 @@ void Track::setTrackID(int trackID) {
 }
 
 void Track::setTrackIDofPoint(int trackID) {
-	for (TrackPoint p : this->historyPoint) {
-		p.setTrackID(trackID);
+	for (vector<TrackPoint>::iterator i = this->historyPoint.begin(); i!=historyPoint.end();i++) {
+		(*i).setTrackID(trackID);
 	}
 }
 void Track::setLength(double length){
@@ -95,7 +95,7 @@ char * Track::getTargetID()
 	return this->TARGETID;
 }
 
-string Track::insertSQL() {
+string Track::insertHisSQL() {
 	
 	string insertSql = "insert into m_historytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,SOURCE,TASKINFO,CONFIDENCELEVEL,OPERATOR,LENGTH) values(";
 	insertSql.append("UUID(),").append(to_string(this->TRACKID)).append(",").append(to_string(POINTAMOUNT)).append(",'").append(this->TARGETID).append("','")
@@ -110,6 +110,14 @@ string Track::insertSQL() {
 
 	//const char* res = "insert into M_HISTORYTRACK_MAIN(GUID, TRACKID, POINTAMOUNT, TARGETID, STARTTIME, ENDTIME, SOURCE, TASKINFO, CONFIDENCELEVEL, OPERATOR, RESERVE1, RESERVE2) values(UUID(), 1, 2,3, '2018-05-30 14:14:14', '2018-5-3', 'source', 'taskInfo', 0.000000, 'Gaara', '', '');";
 	return insertSql;
+}
+
+char * Track::insertFreqSQL()
+{
+	char res[1000];
+	sprintf(res, "insert into m_frequentlytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,LENGTH,CONFIDENCELEVEL,OPERATOR) VALUES\
+(UUID(),%d,%d,%s,'%s','%s',%lf,1,'%s')", TRACKID, POINTAMOUNT,TARGETID, SqlTool::datetimeConvertor(this->STARTTIME), SqlTool::datetimeConvertor(this->ENDTIME),length,OPERATOR);
+	return res;
 }
 
 char* Track::datetimeConvertor(int input) {
@@ -198,15 +206,19 @@ void Track::MDLExtract() {
 
 double Track::MDL_par(int star_index, int cur_index) {
 	double res = 0;
-	int x1 = historyPoint[featurePointIndex[star_index]].CENTERLONGITUDE;
-	int y1 = historyPoint[featurePointIndex[star_index]].CENTERLATITUDE;
-	int x2 = historyPoint[featurePointIndex[cur_index]].CENTERLONGITUDE;
-	int y2 = historyPoint[featurePointIndex[cur_index]].CENTERLATITUDE;
+	int realStartIdx = featurePointIndex[star_index];
+	int realEndIdx = featurePointIndex[cur_index];
+	double x1 = historyPoint[realStartIdx].CENTERLONGITUDE;
+	double y1 = historyPoint[realStartIdx].CENTERLATITUDE;
+	double x2 = historyPoint[realEndIdx].CENTERLONGITUDE;
+	double y2 = historyPoint[realEndIdx].CENTERLATITUDE;
 	res += sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
 	double weights[3] = { 1,1,0 };//此时当做无水平分量
-	Segment s2e = Segment{ Point{historyPoint[featurePointIndex[star_index]].CENTERLONGITUDE,historyPoint[featurePointIndex[star_index]].CENTERLATITUDE },Point{ historyPoint[featurePointIndex[cur_index]].CENTERLONGITUDE,historyPoint[featurePointIndex[cur_index]].CENTERLATITUDE } };
+	Segment s2e = Segment{ Point{x1,y1 },Point{ x2,y2 } };
+
 	for (int counter = star_index; counter < cur_index; counter++) {
-		Segment temp = Segment{ Point{ historyPoint[featurePointIndex[counter]].CENTERLONGITUDE,historyPoint[featurePointIndex[counter]].CENTERLATITUDE },Point{ historyPoint[featurePointIndex[counter+1]].CENTERLONGITUDE,historyPoint[featurePointIndex[counter+1]].CENTERLATITUDE } };
+		int tmpIdx1 = featurePointIndex[counter], tmpIdx2 = featurePointIndex[counter + 1];
+		Segment temp = Segment{ Point{ historyPoint[tmpIdx1].CENTERLONGITUDE,historyPoint[tmpIdx1].CENTERLATITUDE },Point{ historyPoint[tmpIdx2].CENTERLONGITUDE,historyPoint[tmpIdx2].CENTERLATITUDE } };
 		res += MiningTools::distanceBetweenLines(s2e,temp,weights);
 	}
 	return res;
@@ -220,10 +232,11 @@ double Track::lth(int star_index, int cur_index) {
 	double res = 0;
 	for (int counter1 = star_index; counter1 < cur_index; counter1++) {
 		for (int counter2 = counter1+1; counter2 <= cur_index; counter2++) {
-			int x1 = historyPoint[featurePointIndex[counter1]].CENTERLONGITUDE;
-			int y1 = historyPoint[featurePointIndex[counter1]].CENTERLATITUDE;
-			int x2 = historyPoint[featurePointIndex[counter2]].CENTERLONGITUDE;
-			int y2 = historyPoint[featurePointIndex[counter2]].CENTERLATITUDE;
+			int tmpIdx1 = featurePointIndex[counter1], tmpIdx2 = featurePointIndex[counter2];
+			int x1 = historyPoint[tmpIdx1].CENTERLONGITUDE;
+			int y1 = historyPoint[tmpIdx1].CENTERLATITUDE;
+			int x2 = historyPoint[tmpIdx2].CENTERLONGITUDE;
+			int y2 = historyPoint[tmpIdx2].CENTERLATITUDE;
 			res += sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
 		}
 	}
