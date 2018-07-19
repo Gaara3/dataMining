@@ -48,6 +48,7 @@ public:
 
 	int getEndTime();
 	int getStartTime();
+	int getPointAmount();
 	void setPointAmount(int pointAmount);
 	void setStartTime(int startTime);
 	void setEndTime(int endTime);

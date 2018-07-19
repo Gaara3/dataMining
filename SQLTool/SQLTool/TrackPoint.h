@@ -43,7 +43,7 @@ class TrackPoint
 		double CENTERLONGITUDE;//考虑到计算效率，经纬海拔放到public部分以便直接访问
 		double CENTERLATITUDE;
 		double CENTERALTITUDE;
-		string insertHisSQL();
+		char* insertHisSQL();
 		char* insertFreqSQL();
 		TrackPoint();
 		~TrackPoint();
@@ -63,6 +63,7 @@ class TrackPoint
 		void setOrderNumber(int orderNumber);
 		int getOrderNumber();
 		void setTrackID(int trackID);
+		int getTrackID();
 		bool headOfTrack(int lastPosixTime);
 		static char* datetimeConvertor(int input);
 		int getTime();

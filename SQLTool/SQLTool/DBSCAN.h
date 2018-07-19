@@ -23,6 +23,7 @@ private:
 public:
 	int clusterNum;
 	DBSCAN() {}                    //默认构造函数
+	~DBSCAN();
 	DBSCAN(double** distMat,int size, double radius, int minPTs);    //初始化操作
 	int DoDBSCANRecursive();            //DBSCAN递归算法
 	vector<int>* clusterGenerate();

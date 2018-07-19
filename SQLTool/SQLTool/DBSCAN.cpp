@@ -4,6 +4,11 @@
 #include <iosfwd>
 #include <math.h>
 
+DBSCAN::~DBSCAN()
+{
+	/*for(int counter=0;counter<clus)*/
+}
+
 /*
 函数：聚类初始化操作
 说明：将距离矩阵半径，领域最小数据个数信息写入聚类算法类，读取文件，把数据信息读入写进算法类数据集合中

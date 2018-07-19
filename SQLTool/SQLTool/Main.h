@@ -6,6 +6,8 @@
 #include "Cluster.h"
 #include <winsock.h>
 #include "MiningTools.h"
+#include "SampledTrack.h"
+#include "TrackSimplify.h"
 class Main
 {
 public:

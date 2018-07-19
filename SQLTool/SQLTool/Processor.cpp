@@ -116,7 +116,9 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离
 	lastLatitude = latitude;
 	lastLongitude = longitude;
-	sqlTool.insertExcutor(point.insertHisSQL().data());	
+	char* sql = point.insertHisSQL();
+	sqlTool.insertExcutor(sql);
+	delete sql;
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
@@ -181,6 +183,9 @@ double** Processor::disMatrice(vector<Segment>segs)
 			//printf("disof %d,%d:%lf\n", xCounter, yCounter, disMat[xCounter][yCounter]);
 		}
 	}
+	for (int counter = 0; counter < size; counter++)
+		delete[] matFlag[counter];
+	delete[] matFlag;
 	return disMat;
 }
 

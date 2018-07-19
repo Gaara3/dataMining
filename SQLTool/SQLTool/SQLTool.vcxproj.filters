@@ -69,6 +69,12 @@
     <ClInclude Include="Cluster.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TrackSimplify.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SampledTrack.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -117,6 +123,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Processor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TrackSimplify.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SampledTrack.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

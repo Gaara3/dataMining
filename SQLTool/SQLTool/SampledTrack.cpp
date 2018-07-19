@@ -1,0 +1,43 @@
+﻿#include "stdafx.h"
+#include "SampledTrack.h"
+#include "Processor.h"
+#include "SqlTool.h"
+
+
+void SampledTrack::setSampleLevel(int level)
+{
+	this->sampleLevel = level;
+}
+
+SampledTrack::SampledTrack()
+{
+}
+
+SampledTrack::SampledTrack(Track t,int level):Track(t)
+{
+	this->sampleLevel = level;
+}
+
+
+SampledTrack::~SampledTrack()
+{
+}
+
+void SampledTrack::insertSampledDetail()
+{
+	int sampledSize = (int)this->originalOrderNumber.size();
+	int trackID = historyPoint[0].getTrackID();
+	for (int counter = 0; counter < sampledSize;counter++) {
+		char* sql = new char[1000];
+		sprintf_s(sql, 1000, "insert into m_sampling_historytrack_sub(GUID,TRACKID,ORDERNUMBER,ORIGINORDERNUMBER,TIME,\
+		POSIXTIME,SAMPLINGLEVEL,SOURCE,CENTERLONGITUDE,CENTERLATITUDE,CENTERALTITUDE,SPEED,ANGLE,CONFIDENCELEVEL)\
+		values(UUID(),%d,%d,%d,'%s',%d,%d,'%s',%lf,%lf,%lf,%lf,%lf,1)",
+			trackID,historyPoint[counter].getOrderNumber(),originalOrderNumber[counter],SqlTool::datetimeConvertor(historyPoint[counter].getTime()),
+			historyPoint[counter].getTime(),sampleLevel, historyPoint[counter].getSource(), historyPoint[counter].CENTERLONGITUDE,
+			historyPoint[counter].CENTERLATITUDE, historyPoint[counter].CENTERALTITUDE, historyPoint[counter].getSpeed(), 
+			historyPoint[counter].getAngle());
+		Processor::sqlTool.insertExcutor(sql);
+		delete[]sql;
+	}
+	mysql_commit(&Processor::sqlTool.mysql);
+}

@@ -63,6 +63,11 @@ int Track::getStartTime()
 	return this->STARTTIME;
 }
 
+int Track::getPointAmount()
+{
+	return this->POINTAMOUNT;
+}
+
 void Track::setPointAmount(int pointAmount) {
 	this->POINTAMOUNT = pointAmount;
 }

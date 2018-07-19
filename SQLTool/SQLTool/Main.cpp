@@ -2,6 +2,7 @@
 #include "Main.h"
 
 
+
 Main::Main()
 {
 }
@@ -12,6 +13,7 @@ Main::~Main()
 }
 vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> historyTracks,vector<double*>edges,double prec);
 DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,double*,double prec, vector<Segment> &segments);
+void trackSampling(vector<Track>,int startLevel,int endLevel);
 void insertFreqRes(vector<vector<Track>>);
 
 double prec = 0.1;
@@ -29,9 +31,19 @@ int main() {
 	}
 
 	vector<double*> edges = Processor::targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
-
+	//抽稀
+	/*vector<SampledTrack> samT;
+	for (Track t : HistoryTracks) {
+		samT.push_back(TrackSimplify::simplify(t, 10, 2));
+	}
+	for (SampledTrack s : samT) {
+		s.insertSampledDetail();
+	}*/
+	trackSampling(HistoryTracks, 2, 11);
 	vector<vector<Track>> allFreqTracks = targetsFreqTracks(targets,HistoryTracks,edges,prec);//根据轨迹片段，进行:网格化、特征点提取、生成线段距离矩阵、DBSCAN、聚类结果解析
-
+	for (double* p : edges)
+		delete[] p;
+	edges.clear();
 	insertFreqRes(allFreqTracks);
 
 	mysql_free_result(Processor::res);
@@ -64,6 +76,7 @@ vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> his
 		vector<int>* clusterInfo = targetDBSCANNER.clusterGenerate();//启动DBSCANER
 		int clusterNum = targetDBSCANNER.clusterNum;
 		vector<Track> targetFreqTracks = Processor::clusterAnalyze(targetTracks,targetSegs, clusterInfo,clusterNum,trackID);
+			
 		FreqTracks.push_back(targetFreqTracks);
 		printf("---------------------------------------\n");
 	}
@@ -82,7 +95,12 @@ DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,double* edge,double prec, 
 	epsiSolver.solve();
 	double epsi = epsiSolver.getRes();
 	printf("DBSCAN epsi:%10g\n", epsi);
-	return DBSCAN(disMat, segments.size(), epsi, minPts);	//使用DBSCAN进行子段聚类
+	DBSCAN res= DBSCAN(disMat, segments.size(), epsi, minPts);	//使用DBSCAN进行子段聚类
+	for (int counter = 0; counter < segments.size(); counter++) {
+		delete[] disMat[counter];
+	}
+	delete[] disMat;
+	return res;
 }
 
 void insertFreqRes(vector<vector<Track>> allFreqTracks) {
@@ -100,3 +118,10 @@ void insertFreqRes(vector<vector<Track>> allFreqTracks) {
 	mysql_commit(&Processor::sqlTool.mysql);
 }
 
+void trackSampling(vector<Track> tracks,int startLevel,int endLevel) {
+	for (int counter = startLevel; counter <= endLevel; ++counter) {
+		for (Track t : tracks) {
+			TrackSimplify::simplify(t, counter, 2).insertSampledDetail();
+		}		
+	}
+}
