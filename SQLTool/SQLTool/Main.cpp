@@ -15,38 +15,34 @@ vector<vector<Track>> targetsFreqTracks(vector<char*> targets, vector<Track> his
 DBSCAN analyzeTargetTracks(vector<Track>&targetTracks,double*,double prec, vector<Segment> &segments);
 void trackSampling(vector<Track>,int startLevel,int endLevel);
 void insertFreqRes(vector<vector<Track>>);
+void miningInit();
 
 double prec = 0.1;
 int minPts = 2;
+
 int main() {
 	//Processor Processor;
-	Processor::sqlTool.connectDB();
-	Processor::sqlTool.operationExcutor(Track::getTargetsQuery, Processor::res);
+	SqlTool::connectDB();
+	miningInit();
+	SqlTool::operationExcutor(Track::getTargetsQuery,SqlTool::res);
 	vector<char*> targets;
-	vector<Track> HistoryTracks;	
-	
+	vector<Track> HistoryTracks;		
 
-	while (Processor::column = mysql_fetch_row(Processor::res)) {
-		targets.push_back(Processor::column[0]);
+	while (SqlTool::column = mysql_fetch_row(SqlTool::res)) {
+		targets.push_back(SqlTool::column[0]);
 	}
 
 	vector<double*> edges = Processor::targetsPreProcession(targets, HistoryTracks);//初始轨迹分段(根据时间阈值)，并得出4条边界
-	//抽稀
-	/*vector<SampledTrack> samT;
-	for (Track t : HistoryTracks) {
-		samT.push_back(TrackSimplify::simplify(t, 10, 2));
-	}
-	for (SampledTrack s : samT) {
-		s.insertSampledDetail();
-	}*/
-	trackSampling(HistoryTracks, 2, 11);
+	for (Track t : HistoryTracks)
+		t.insertHisDetail();
+	trackSampling(HistoryTracks, 1, 11);
 	vector<vector<Track>> allFreqTracks = targetsFreqTracks(targets,HistoryTracks,edges,prec);//根据轨迹片段，进行:网格化、特征点提取、生成线段距离矩阵、DBSCAN、聚类结果解析
 	for (double* p : edges)
 		delete[] p;
 	edges.clear();
 	insertFreqRes(allFreqTracks);
 
-	mysql_free_result(Processor::res);
+	mysql_free_result(SqlTool::res);
 	system("pause");
 	return 0;
 }
@@ -110,18 +106,28 @@ void insertFreqRes(vector<vector<Track>> allFreqTracks) {
 		for (Track t: tracks) {
 			if (t.historyPoint.size() == 0)
 				continue;
-			Processor::sqlTool.insertExcutor(t.insertFreqSQL());
-			for(TrackPoint p:t.historyPoint)
-				Processor::sqlTool.insertExcutor(p.insertFreqSQL());				
+			SqlTool::insertExcutor(t.insertFreqSQL());
+			for (TrackPoint p : t.historyPoint) {
+				SqlTool::insertExcutor(p.insertFreqSQL());
+			}							
 		}
 	}
-	mysql_commit(&Processor::sqlTool.mysql);
+	mysql_commit(&SqlTool::mysql);
 }
 
 void trackSampling(vector<Track> tracks,int startLevel,int endLevel) {
 	for (int counter = startLevel; counter <= endLevel; ++counter) {
 		for (Track t : tracks) {
-			TrackSimplify::simplify(t, counter, 2).insertSampledDetail();
+			SampledTrack s =TrackSimplify::simplify(t, counter, 2);			
+			s.insertSampledDetail();
 		}		
 	}
+}
+
+void miningInit() {
+	SqlTool::operationExcutor("truncate m_historytrack_main", SqlTool::res);
+	SqlTool::operationExcutor("truncate m_historytrack_sub", SqlTool::res);
+	SqlTool::operationExcutor("truncate m_frequentlytrack_main", SqlTool::res);
+	SqlTool::operationExcutor("truncate m_frequentlytrack_sub", SqlTool::res);
+	SqlTool::operationExcutor("truncate m_sampling_historytrack_sub", SqlTool::res);
 }

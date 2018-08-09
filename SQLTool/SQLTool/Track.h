@@ -56,6 +56,7 @@ public:
 	void setLength(double length);
 	void setTargetID(char* id);
 	void setTrackIDofPoint(int trackID);
+	void insertHisDetail();
 	char* getTargetID();
 	string insertHisSQL();
 	char* insertFreqSQL();

@@ -55,6 +55,16 @@ void TrackPoint::setGridY(int Y)
 	this->gridY = Y;
 }
 
+void TrackPoint::setOriginOrderNumber(int n)
+{
+	this->ORIGINORDERNUMBER = n;
+}
+
+int TrackPoint::getOriginOrderNumber()
+{
+	return this->ORIGINORDERNUMBER;
+}
+
 
 TrackPoint::~TrackPoint()
 {
@@ -76,6 +86,25 @@ TrackPoint::TrackPoint(int orderNumber, double Longitude, double Latitude):ORDER
 	this->LOWERRIGHTLATITUDE = Latitude;
 }
 
+char* TrackPoint::insertHisDetail(bool first) {
+	char* res = new char[512];
+	const char* sql = first ? "(UUID(),%d,%d,%d,'%s','%s',%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,1,'%s','%s')" : ",(UUID(),%d,%d,%d,'%s','%s',%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,1,'%s','%s')";
+	sprintf_s(res, 512, sql, TRACKID, ORDERNUMBER, TIME, SqlTool::datetimeConvertor(TIME), SOURCE, UPPERLEFTLONGITUDE, UPPERLEFTLATITUDE, UPPERLEFTALTITUDE,
+		UPPERRIGHTLONGITUDE, UPPERRIGHTLATITUDE, UPPERRIGHTALTITUDE, LOWERRIGHTLONGITUDE, LOWERRIGHTLATITUDE, LOWERRIGHTALTITUDE,
+		LOWERLEFTLONGITUDE, LOWERLEFTLATITUDE, LOWERLEFTALTITUDE, CENTERLONGITUDE, CENTERLATITUDE, CENTERALTITUDE, speed, angle, RESERVE1, RESERVE2);
+
+	return res;
+}
+
+char * TrackPoint::sampledSQL(bool first, int sampleLevel)
+{
+	char* res = new char[256];
+	const char* sql = first ? "(UUID(), %d, %d, %d, '%s', %d, %d, '%s', %lf, %lf, %lf, %lf, %lf, 1)" : ",(UUID(), %d, %d, %d, '%s', %d, %d, '%s', %lf, %lf, %lf, %lf, %lf, 1)";
+	sprintf_s(res, 256, sql,
+		TRACKID, ORDERNUMBER, ORIGINORDERNUMBER, SqlTool::datetimeConvertor(TIME), TIME, sampleLevel, SOURCE, CENTERLONGITUDE,
+		CENTERLATITUDE, CENTERALTITUDE, speed, angle, RESERVE1, RESERVE2);
+	return res;
+}
 char* TrackPoint::insertHisSQL() {
 	char* res = new char[1500];
 	sprintf_s(res, 1500, "insert into m_historytrack_sub(GUID,TRACKID,ORDERNUMBER,POSIXTIME,TIME,SOURCE,UPPERLEFTLONGITUDE,\
@@ -92,8 +121,8 @@ char* TrackPoint::insertHisSQL() {
 
 char * TrackPoint::insertFreqSQL()
 {
-	char res[1000];
-	sprintf_s(res, 1000, "insert into m_selectedfrequentlytrack_sub(GUID,TRACKID,ORDERNUMBER,CENTERLONGITUDE,CENTERLATITUDE,CENTERALTITUDE,UPPERLEFTLONGITUDE,UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,\
+	char* res = new char[1000];
+	sprintf_s(res, 1000, "insert into m_frequentlytrack_sub(GUID,TRACKID,ORDERNUMBER,CENTERLONGITUDE,CENTERLATITUDE,CENTERALTITUDE,UPPERLEFTLONGITUDE,UPPERLEFTLATITUDE,UPPERLEFTALTITUDE,\
 	UPPERRIGHTLONGITUDE,UPPERRIGHTLATITUDE,UPPERRIGHTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,LOWERLEFTLONGITUDE,LOWERLEFTLATITUDE,LOWERLEFTALTITUDE,\
 CONFIDENCELEVEL,AVGSPEED) VALUES(UUID(),%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,1,%lf);", TRACKID, ORDERNUMBER, CENTERLONGITUDE, CENTERLATITUDE, CENTERALTITUDE, UPPERLEFTLONGITUDE, UPPERLEFTLATITUDE, UPPERLEFTALTITUDE,
 UPPERRIGHTLONGITUDE, UPPERRIGHTLATITUDE, UPPERRIGHTALTITUDE, LOWERRIGHTLONGITUDE, LOWERRIGHTLATITUDE, LOWERRIGHTALTITUDE, LOWERLEFTLONGITUDE, LOWERLEFTLATITUDE, LOWERLEFTALTITUDE,speed);
@@ -156,8 +185,6 @@ void TrackPoint::setSpeed(double speed)
 	this->speed = speed;
 }
 
-
-
 //与上一点时间间隔大，视为起点
 bool TrackPoint::headOfTrack(int lastPosixTime) {
 	return this->TIME - lastPosixTime > intervalThreshold;
@@ -171,7 +198,6 @@ char* TrackPoint::datetimeConvertor(int input) {
 	return res;
 }
 
-
 int TrackPoint::getGridX(double*  edges,double prec) {
 	return floor((this->CENTERLONGITUDE- edges[1]) / prec);
 }
@@ -179,7 +205,6 @@ int TrackPoint::getGridX(double*  edges,double prec) {
 int TrackPoint::getGridY(double* edges, double prec) {
 	return floor((this->CENTERLATITUDE - edges[3]) / prec);
 }
-
 
 bool TrackPoint::inTheGrid(Grid grid,double* edges,double prec) {
 	return this->getGridX(edges,prec) == grid.gridX  &&  this->getGridY(edges, prec) == grid.gridY;

@@ -5,7 +5,7 @@ class SampledTrack :
 {
 	int sampleLevel;
 public:
-	vector<int> originalOrderNumber;
+	//vector<int> originalOrderNumber;
 	void setSampleLevel(int level);
 	SampledTrack();
 	SampledTrack(Track t,int level);

@@ -86,6 +86,37 @@ void Track::setTrackIDofPoint(int trackID) {
 		(*i).setTrackID(trackID);
 	}
 }
+void Track::insertHisDetail()
+{
+	char *trackSql = new char[1000];
+	sprintf_s(trackSql, 1000, "insert into m_historytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,SOURCE,TASKINFO,CONFIDENCELEVEL,OPERATOR,LENGTH)\
+ values(UUID(),%d,%d,'%s','%s','%s','%s','%s',%lf,'%s',%lf)", TRACKID, POINTAMOUNT, TARGETID, SqlTool::datetimeConvertor(STARTTIME), SqlTool::datetimeConvertor(ENDTIME), SOURCE, TASKINFO,
+		CONFIDENCELEVEL, OPERATOR, length);
+	SqlTool::insertExcutor(trackSql);
+	delete[] trackSql;
+	int tenCounter = 0;
+	string head("insert into m_historytrack_sub(GUID,TRACKID,ORDERNUMBER,POSIXTIME,TIME,SOURCE,UPPERLEFTLONGITUDE,\
+	UPPERLEFTLATITUDE,UPPERLEFTALTITUDE, UPPERRIGHTLONGITUDE,UPPERRIGHTLATITUDE,UPPERRIGHTALTITUDE,LOWERRIGHTLONGITUDE,LOWERRIGHTLATITUDE,LOWERRIGHTALTITUDE,\
+	LOWERLEFTLONGITUDE,LOWERLEFTLATITUDE,LOWERLEFTALTITUDE,CENTERLONGITUDE,CENTERLATITUDE,\
+	CENTERALTITUDE,SPEED,ANGLE,CONFIDENCELEVEL,RESERVE1,RESERVE2) \
+	values ");
+	string tmp(head);
+	for (TrackPoint p : historyPoint) {
+		tmp.append(p.insertHisDetail(tenCounter == 0));
+		if (tenCounter == 9) {
+			tmp.append(";");
+			SqlTool::insertExcutor(tmp.data());
+			tenCounter = -1;
+			tmp = head;
+		}
+		++tenCounter;
+	}
+	if (tenCounter != 0) {
+		tmp.append(";");
+		SqlTool::insertExcutor(tmp.data());
+	}
+	mysql_commit(&SqlTool::mysql);
+}
 void Track::setLength(double length){
 	this->length = length;
 }
@@ -120,7 +151,7 @@ string Track::insertHisSQL() {
 char * Track::insertFreqSQL()
 {
 	char res[1000];
-	sprintf(res, "insert into m_selectedfrequentlytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,LENGTH,CONFIDENCELEVEL,OPERATOR) VALUES\
+	sprintf_s(res,1000, "insert into m_frequentlytrack_main (GUID,TRACKID,POINTAMOUNT,TARGETID,STARTTIME,ENDTIME,LENGTH,CONFIDENCELEVEL,OPERATOR) VALUES\
 (UUID(),%d,%d,%s,'%s','%s',%lf,1,'%s')", TRACKID, POINTAMOUNT,TARGETID, SqlTool::datetimeConvertor(this->STARTTIME), SqlTool::datetimeConvertor(this->ENDTIME),length,OPERATOR);
 	return res;
 }

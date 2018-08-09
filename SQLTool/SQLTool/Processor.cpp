@@ -13,9 +13,9 @@ Processor::~Processor()
 {
 }
 
-SqlTool Processor::sqlTool ;
-MYSQL_RES* Processor::res;
-MYSQL_ROW Processor::column;
+//SqlTool Processor::sqlTool ;
+//MYSQL_RES* Processor::res;
+//MYSQL_ROW Processor::column;
 
 extern int minPts;
 /*
@@ -50,10 +50,10 @@ double* Processor::getTargetEdges(char * targetID)
 	sprintf(minLongSql, "SELECT min(LONGITUDE)from m_preprocessing where targetID = '%s';", targetID);
 	sprintf(maxLatSql, "SELECT max(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
 	sprintf(minLatSql, "SELECT min(LATITUDE)from m_preprocessing where targetID = '%s';", targetID);
-	edges[0] = atof(sqlTool.getVariableFromDB(maxLongSql));
-	edges[1] = atof(sqlTool.getVariableFromDB(minLongSql));
-	edges[2] = atof(sqlTool.getVariableFromDB(maxLatSql));
-	edges[3] = atof(sqlTool.getVariableFromDB(minLatSql));
+	edges[0] = atof(SqlTool::getVariableFromDB(maxLongSql));
+	edges[1] = atof(SqlTool::getVariableFromDB(minLongSql));
+	edges[2] = atof(SqlTool::getVariableFromDB(maxLatSql));
+	edges[3] = atof(SqlTool::getVariableFromDB(minLatSql));
 	return edges;
 }
 
@@ -67,19 +67,19 @@ void Processor::oneTargetPreProcession(char* target, vector<Track>&HistoryTracks
 	int orderNumber = 0;
 	double totalLength = 0;
 	double lastLongitude = 181, lastLatitude = 91;
-	sqlTool.operationExcutor(Track::getTargetRecords(target), res);
-	mysql_autocommit(&sqlTool.mysql, 0);
-	MYSQL_RES *targetRecord = res;
+	SqlTool::operationExcutor(Track::getTargetRecords(target), SqlTool::res);
+	//mysql_autocommit(&SqlTool::mysql, 0);
+	MYSQL_RES *targetRecord = SqlTool::res;
 	vector<TrackPoint> details;
 
-	while (column = mysql_fetch_row(targetRecord)) {		
-		pointPreprocession(details,column, HistoryTracks,trackID, lastPosixtime,orderNumber, newTarget,totalLength,lastLongitude,lastLatitude);
+	while (SqlTool::column = mysql_fetch_row(targetRecord)) {
+		pointPreprocession(details, SqlTool::column, HistoryTracks,trackID, lastPosixtime,orderNumber, newTarget,totalLength,lastLongitude,lastLatitude);
 		newTarget = false;//TODO   改进
 	}
 	//单目标最后一段轨迹需要专门处理一次
 	HistoryTracks.back().trackEndProcession(lastPosixtime, orderNumber, details,totalLength);
-	sqlTool.insertExcutor(HistoryTracks.back().insertHisSQL().data());
-	mysql_commit(&sqlTool.mysql);
+	//SqlTool::insertExcutor(HistoryTracks.back().insertHisSQL().data());
+	mysql_commit(&SqlTool::mysql);
 }
 
 
@@ -95,8 +95,8 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 		if (!newTarget) {//newTarget 已涵盖队列为空的情况，不再另行判断
 			Track *lastTrack = &HistoryTracks.back();
 			lastTrack->trackEndProcession(lastPosixTime, orderNumber, details,totalLength);
-			sqlTool.insertExcutor(lastTrack->insertHisSQL().data());	//为了不传类别无关变量res，暂不加入封装
-			mysql_commit(&sqlTool.mysql);
+			//SqlTool::insertExcutor(lastTrack->insertHisSQL().data());	//为了不传类别无关变量res，暂不加入封装
+			mysql_commit(&SqlTool::mysql);
 			//引用值重置，考虑封装
 			lastPosixTime = 0;			
 			orderNumber = 0;			
@@ -116,9 +116,9 @@ void Processor::pointPreprocession(vector<TrackPoint>&details,MYSQL_ROW column, 
 	totalLength += distanceBetweenPoints(lastLongitude, lastLatitude,longitude,latitude);//计算两地点距离
 	lastLatitude = latitude;
 	lastLongitude = longitude;
-	char* sql = point.insertHisSQL();
-	sqlTool.insertExcutor(sql);
-	delete sql;
+	/*char* sql = point.insertHisSQL();
+	SqlTool::insertExcutor(sql);
+	delete sql;*/
 	//printf("                              new point%d                              \n", orderNumber);
 }
 
@@ -180,7 +180,6 @@ double** Processor::disMatrice(vector<Segment>segs)
 			disMat[yCounter][xCounter] = disMat[xCounter][yCounter];
 			matFlag[xCounter][yCounter] = true;
 			matFlag[yCounter][xCounter] = true;
-			//printf("disof %d,%d:%lf\n", xCounter, yCounter, disMat[xCounter][yCounter]);
 		}
 	}
 	for (int counter = 0; counter < size; counter++)
@@ -279,10 +278,6 @@ void Processor::clusterRotation(vector<Segment>&segs, double angle)
 }
 
 void Processor::segmentRotation(Segment &seg, double angle) {
-	/*seg.start.x = cos(angle)*seg.start.x - sin(angle)*seg.start.y;
-	seg.start.y = sin(angle)*seg.start.y + cos(angle)*seg.start.y;
-	seg.end.x = cos(angle)*seg.end.x - sin(angle)*seg.end.y;
-	seg.end.y = sin(angle)*seg.end.y + cos(angle)*seg.end.y;*/
 	seg.start.rotateAnticlockwise(angle);
 	seg.end.rotateAnticlockwise(angle);
 }

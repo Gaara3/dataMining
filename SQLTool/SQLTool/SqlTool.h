@@ -10,16 +10,20 @@ class SqlTool
 {
 private:
 
-public:	
-	MYSQL mysql;
-	MYSQL_RES *res;
-	bool connectDB();
-	bool operationExcutor(const char* operation,MYSQL_RES* &res);
-	bool insertExcutor(const char* operation);
-	char* getVariableFromDB(const char* operation);
+public:
+	static MYSQL mysql;
+	static MYSQL_RES *res;
+	static MYSQL_ROW column;
+
+	static bool connectDB();
+	static bool operationExcutor(const char* operation, MYSQL_RES* &res);
+	static bool insertExcutor(const char* operation);
+	static char* getVariableFromDB(const char* operation);
 	//char* uuidGenerator(MYSQL_RES* &res);
 	static char* datetimeConvertor(int input);
+	static bool setCharSetEncoding(const char* CharSetEncoding);
 	SqlTool();
 	~SqlTool();
 };
+
 

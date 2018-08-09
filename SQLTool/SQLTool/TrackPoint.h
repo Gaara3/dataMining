@@ -12,6 +12,7 @@ class TrackPoint
 	private:
 		int TRACKID;
 		int ORDERNUMBER;
+		int ORIGINORDERNUMBER;
 		//char* TARGETID;
 		int TIME;
 		char* SOURCE;
@@ -45,12 +46,16 @@ class TrackPoint
 		double CENTERALTITUDE;
 		char* insertHisSQL();
 		char* insertFreqSQL();
+		char* insertHisDetail(bool);
+		char* sampledSQL(bool first, int sampleLevel);
 		TrackPoint();
 		~TrackPoint();
 		TrackPoint(int orderNumber, double Longitude, double Latitude);
 		TrackPoint(/*char* TARGET,*/char* POSIXTIME,char* SOURCE,double LONGITUDE,double LATITUDE,double ALTITUDE, char* OPERATOR,char* RESERVE1,char* RESERVE2,double speed,double angle);
 		void setGridX(int X);
 		void setGridY(int Y);
+		void setOriginOrderNumber(int);
+		int getOriginOrderNumber();
 
 		bool inTheGrid(Grid grid,double* edges,double prec);
 		

@@ -17,9 +17,9 @@ class Processor
 {
 	double prec = 0.1;
 public:
-	static SqlTool sqlTool;
-	static MYSQL_RES *res;
-	static MYSQL_ROW column;
+	//static SqlTool sqlTool;
+	//static MYSQL_RES *res;
+	//static MYSQL_ROW column;
 	Processor();
 	~Processor();
 	static vector<double*> targetsPreProcession(vector<char*> targets,vector<Track> &HistoryTracks);

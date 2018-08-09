@@ -45,7 +45,8 @@ SampledTrack TrackSimplify::similifyRadialDistance(Track t, double sqTolerance)
 	int prevIdx= 0;
 	int newOrder = 1;
 	
-	res.originalOrderNumber.push_back(1);
+	//res.originalOrderNumber.push_back(1);
+	tmp[0].setOriginOrderNumber(1);
 	tmp[0].setOrderNumber(newOrder++);
 	tmpTrackDetail.push_back(tmp[0]);
 
@@ -55,14 +56,16 @@ SampledTrack TrackSimplify::similifyRadialDistance(Track t, double sqTolerance)
 	//注意：orderNumber是从1开始计数
 	for (; tmpIdx < pointAmount; ++tmpIdx) {
 		if (getSquareDist(tmp[tmpIdx], tmp[prevIdx]) > sqTolerance) {
-			res.originalOrderNumber.push_back(tmpIdx+1);
+			//res.originalOrderNumber.push_back(tmpIdx+1);
+			tmp[tmpIdx].setOriginOrderNumber(tmpIdx + 1);
 			tmp[tmpIdx].setOrderNumber(newOrder++);
 			tmpTrackDetail.push_back(tmp[tmpIdx]);
 			prevIdx = tmpIdx;
 		}
 	}
 	if (prevIdx != tmpIdx-1) {
-		res.originalOrderNumber.push_back(tmpIdx);
+		//res.originalOrderNumber.push_back(tmpIdx);
+		tmp[tmpIdx - 1].setOriginOrderNumber(tmpIdx);
 		tmp[tmpIdx - 1].setOrderNumber(newOrder);
 		tmpTrackDetail.push_back(tmp[tmpIdx - 1]);
 	}
